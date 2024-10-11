@@ -199,15 +199,51 @@ Việc cấu hình GPIO được thực hiện thông qua việc khai báo và s
         <img src="image-10.png" alt="alt text" width="250">
     </p>
 
- - **GPIO_Speed**: Tốc độ đáp ứng.
+ - **GPIO_Speed**: Chọn tốc độ đáp ứng của chân GPIO.
+
+    <p align="center">
+        <img src="image-12.png" alt="alt text" width="200">
+    </p>
 
 Hàm khởi tạo GPIO_Init() nhận 2 tham số: 
- - GPIO_TypeDef: GPIO cần cấu hình.
- - &GPIO_InitStruct: Con trỏ tới biến TypeDef vừa được tạo.
+ - GPIO_TypeDef: Chỉ định cổng GPIO muốn cấu hình (ví dụ: `GPIOA`, `GPIOB`, `GPIOC`,...).
+ - &GPIO_InitStruct: Con trỏ đến biến cấu trúc `GPIO_InitTypeDef` chứa các thông số cấu hình.
 
+### Sử dụng GPIO
 
-### Cấu hình ngoại vi GPIO
+Một số hàm thao tác với GPIO:
 
+ - Đọc giá trị mức logic (0 hoặc 1) của một chân Input/Output cụ thể trên cổng GPIO.
+    ```C
+    uint8_t GPIO_ReadInputDataBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    uint8_t GPIO_ReadOutputDataBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    ```
+ - Đọc toàn bộ giá trị đầu vào/ra của một cổng GPIO.
+
+    _Giá trị trả về 16-bit, mỗi bit tương ứng với trạng thái của từng chân của cổng._
+
+    ```C
+    uint16_t GPIO_ReadInputData(GPIO_TypeDef* GPIOx);
+    uint16_t GPIO_ReadOutputData(GPIO_TypeDef* GPIOx);
+    ```
+ - Đặt mức cao (1) / thấp (0) cho một hoặc nhiều chân output sử dụng OR `|` trên một cổng GPIO.
+
+    ```C
+    void GPIO_SetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    void GPIO_ResetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    ```
+ - Ghi mức logic cụ thể (0 hoặc 1) cho một chân output.
+
+    ```C
+    void GPIO_WriteBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, BitAction BitVal);
+    ```
+
+ - Ghi một giá trị 16-bit trực tiếp cho toàn bộ cổng GPIO, trong đó mỗi bit đại diện cho trạng thái của một chân.
+    
+    ```C
+    void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal);
+    ```
+## 4. Bài tập thực hành (Xem trong folder: lesson-2-GPIO)
 
 </p>
 </details>
