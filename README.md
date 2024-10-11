@@ -136,7 +136,7 @@ Ví dụ các chức năng thay thế: chân Rx/Tx cho giao tiếp UART, chân S
 
 Để cấu hình cho chức năng thay thế, ta phải tác động lên các thanh ghi cụ thể, sẽ học kĩ hơn ở các bài sau.
 
-## 3. Thực hành với GPIO
+## 3. Lập trình với GPIO
 
 Để sử dụng một ngoại vi bất kì phải trải qua các bước sau:
 
@@ -243,7 +243,7 @@ Một số hàm thao tác với GPIO:
     ```C
     void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal);
     ```
-## 4. Bài tập thực hành (Xem trong folder: lesson-2-GPIO)
+## 4. Bài tập (Xem trong folder: lesson-2-GPIO)
 
 </p>
 </details>
