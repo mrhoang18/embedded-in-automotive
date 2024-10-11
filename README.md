@@ -15,61 +15,198 @@ stm32f1, CAN, LIN, AUTOSAR
 <p>
 
 ## 1. Thư viện STM32F10x SPL (Standard Peripherals Library)
-## 2. GPIO-General Purpose Input/Output 
+## 2. Lý thuyết về GPIO
 
-GPIO là các chân trên vi điều khiển có thể lập trình để truyền nhận tín 
+GPIO-General Purpose Input/Output là các chân trên vi điều khiển có thể lập trình để truyền nhận tín 
 hiệu với các thiết bị bên ngoài hoặc thực hiện các chức năng giao tiếp 
 khác.
  
 GPIO hoạt động ở các chế độ sau:
 
-### GPIO Output
-
-Ở chế độ này, chân GPIO được sử dụng để xuất tín hiệu ra bên ngoài từ 
-vi điều khiển.
-
-Các loại Input Mode:
-
- - Floating hay High-impedance (thả nổi): Chân GPIO không có trạng thái điện áp xác định khi
-  không có tín hiệu vào. 
-
-    <p align="center">
-        <img src="image.png" alt="alt text" width="200">
-    </p>
-
-    _Dễ bị nhiễu và tốn năng lượng, không nên sử dụng mode này!_
-
-
-        
- - Pull-up: Chân GPIO ở mức logic cao khi không có tín hiệu đầu vào.
-    <p align="center">
-        <img src="image-1.png" alt="alt text" width="300">
-    </p>    
- - Pull-down: Chân GPIO ở mức logic thấp khi không có tín hiệu đầu vào.
-
-### GPIO Input
+### GPIO Intput
 
 Ở chế độ này, chân GPIO được sử dụng để nhận tín hiệu từ bên ngoài 
 vào vi điều khiển.
 
+Các loại Input Mode:
+
+ - **Floating hay High-impedance (thả nổi)**: Chân GPIO không có trạng thái điện áp xác định khi
+  không có tín hiệu vào. 
+
+    Ví dụ:
+
+    Mắc một nút nhấn theo kiểu Floating như hình, khi không nhấn nút thì 
+    không có tín hiệu vào.
+
+    Khi nhấn nút, VĐK nhận tín hiệu tùy vào chân còn lại của nút nhấn mắc
+    với Vcc hay Gnd (trong hình là Gnd, VĐK nhận mức thấp (0)).
+
+    <p align="center">
+        <img src="image.png" alt="alt text" width="300">
+    </p>
+
+    _Không nên sử dụng mode này! Dễ bị nhiễu lúc không có tín hiệu và tốn năng lượng_
+
+ - **Pull-up (điện trở kéo lên)**: Chân GPIO ở mức cao khi không có tín hiệu đầu vào.
+    
+    Ví dụ: 
+    
+    Mắc một nút nhấn theo kiểu pull-up như hình, khi không nhấn nút thì PMOS dẫn,
+    VĐK sẽ nhận mức cao (1).
+    <p align="center">
+        <img src="image-1.png" alt="alt text" width="300">
+    </p>
+
+    Ngược lại khi nhấn nút, NMOS dẫn thì VĐK nhận mức thấp (0).
+    <p align="center">
+        <img src="image-2.png" alt="alt text" width="300">
+    </p>
+
+ - **Pull-down (điện trở kéo xuống)**: Chân GPIO ở mức thấp khi không có tín hiệu đầu vào.
+    
+    Ví dụ: 
+
+    Mắc một nút nhấn theo kiểu pull-down như hình, khi không nhấn nút thì NMOS dẫn,
+    VĐK sẽ nhận mức thấp (0).
+
+    <p align="center">
+        <img src="image-3.png" alt="alt text" width="300">
+    </p>
+
+    Ngược lại khi nhấn nút, PMOS dẫn thì VĐK nhận mức cao (1).
+    <p align="center">
+        <img src="image-4.png" alt="alt text" width="300">
+    </p>
+
+### GPIO Input
+
+Ở chế độ này, chân GPIO được sử dụng để xuất tín hiệu ra bên ngoài từ 
+vi điều khiển.
+
 Các loại Output Mode:
 
- - Output Push-Pull: Tín hiệu xuất ra có thể là mức cao (1) hoặc mức
-  thấp (0), và chân có thể đẩy dòng điện ra ngoài hoặc kéo dòng điện vào. Đây là chế độ thường dùng nhất.
+ - Push-Pull: Chân GPIO xuất ra có thể là mức cao (1) hoặc mức thấp (0).
 
- - Output Open-Drain: Chân chỉ có thể kéo xuống mức logic thấp (0) hoặc ở 
- trạng thái "thả nổi" (high impedance). Để tạo ra mức logic cao, thường 
- cần một điện trở kéo lên (pull-up). Chế độ này hữu ích khi giao tiếp 
- với các bus nhiều thiết bị như I2C.
+    Ví dụ:
+
+    Khi VĐK xuất mức cao (1), PMOS dẫn và chân GPIO sẽ ở mức cao (1).
+    <p align="center">
+        <img src="image-5.png" alt="alt text" width="200">
+    </p>
+
+    Ngược lại, VĐK xuất mức thấp (0), NMOS dẫn và chân GPIO sẽ ở mức thấp (0).
+    <p align="center">
+        <img src="image-6.png" alt="alt text" width="200">
+    </p>
+
+ - Open-Drain: Chân GPIO chỉ  có thể xuất ra mức thấp (0) hoặc ở trạng thái "thả nổi".
+
+    Ví dụ:
+
+    Khi ở mode Open-Drain thì Output Buffer chỉ còn lại một NMOS.
+
+    Khi VĐK xuất mức cao (1), NMOS không dẫn và chân GPIO sẽ thả nổi.
+    
+    Khi VĐK xuất mức thấp (0), NMOS dẫn và chân GPIO sẽ ở mức thấp (0).
+
+    <p align="center">
+        <img src="image-7.png" alt="alt text" width="200">
+    </p>
+
+    _Nếu VĐK dùng mosfet thì gọi là Open-Drain, còn nếu dùng BJT gọi là Open-Collector._
 
 
+### Analog
 
+Ở chế độ này, chân GPIO kết nối với bộ chuyển đổi ADC (analog-to-digital converter) bên trong và cho phép đọc một giá trị đại diện cho điện áp trên chân đó. 
 
+Giá trị này phụ thuộc vào độ phân giải của ADC. 
+
+Ví dụ: ADC 12-bit có thể có các giá trị từ 0 đến 4095. Giá trị này được ánh xạ tới một điện áp nằm trong khoảng từ 0V đến điện áp mà vi điều khiển đang hoạt động (ví dụ, 3.3V). 
+
+Khi một GPIO được cấu hình ở chế độ analog, các điện trở kéo lên/kéo xuống đầu vào sẽ bị vô hiệu (thả nổi).
+
+_Sẽ học kĩ hơn ở bài ADC._
 
 ### Alternate Function
-### Analog
-### EXTI (External Interrupt)
 
+Ngoài ba chế độ trên, các chân GPIO còn có thể cung cấp các chức năng thay thế.
+
+Ví dụ các chức năng thay thế: chân Rx/Tx cho giao tiếp UART, chân SDA/SCL cho giao tiếp I2C, v.v.
+
+Để cấu hình cho chức năng thay thế, ta phải tác động lên các thanh ghi cụ thể, sẽ học kĩ hơn ở các bài sau.
+
+## 3. Thực hành với GPIO
+
+Để sử dụng một ngoại vi bất kì phải trải qua các bước sau:
+
+<p align="center">
+    <img src="image-8.png" alt="alt text" width="500">
+</p>
+
+Như các thư viện khác (HAL, LL, CMSIS,...), SPL cung cấp các hàm và các định nghĩa giúp việc cấu hình và sử dụng ngoại vi.
+
+### Cấp xung clock cho GPIO
+
+STM32 sử dụng các bus (như AHB, APB1, APB2) để giao tiếp với các ngoại vi như GPIO, UART, I2C, SPI, v.v.
+
+Để sử dụng các ngoại vi này, trước tiên, cần cấp xung (clock) cho bus tương ứng thông qua việc sử dụng các API trong thư viện.
+
+Tra thông tin clock trong Reference (trang 92) và Data sheet (trang 11) để biết được bus nào cần được cấp xung.
+
+<p align="center">
+    <img src="image-9.png" alt="alt text" width="300">
+</p>
+
+Trong SPL, để bật xung clock cho ngoại vi GPIO:
+
+```c
+void RCC_Config(){
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+} 
+```
+ - Tham số thứ 1 là ngoại vi cần cấu hình clock. 
+
+ - Tham số thứ 2 là giá trị quy định cấp (ENABLE) hay ngưng (DISABLE) xung clock cho ngoại vi đó.
+
+### Cấu hình GPIO
+
+Để cấu hình cho chân GPIO:
+```c
+void GPIO_Config(){
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+}
+```
+Việc cấu hình GPIO được thực hiện thông qua việc khai báo và sử dụng struct `GPIO_InitTypeDef`,
+ trong đó chứa các tham số cấu hình cho một chân GPIO cụ thể:
+
+ - **GPIO_Pin**: Xác định chân hoặc các chân GPIO muốn cấu hình bằng 
+  cách sử dụng các macro như `GPIO_Pin_0`, `GPIO_Pin_1`,... hoặc kết hợp
+  các chân bằng toán tử OR `|` nếu muốn cấu hình nhiều chân cùng lúc.
+
+    <p align="center">
+        <img src="image-11.png" alt="alt text" width="500">
+    </p>
+
+ - **GPIO_Mode**: Xác định mode hoạt động của chân GPIO.
+
+    <p align="center">
+        <img src="image-10.png" alt="alt text" width="250">
+    </p>
+
+ - **GPIO_Speed**: Tốc độ đáp ứng.
+
+Hàm khởi tạo GPIO_Init() nhận 2 tham số: 
+ - GPIO_TypeDef: GPIO cần cấu hình.
+ - &GPIO_InitStruct: Con trỏ tới biến TypeDef vừa được tạo.
+
+
+### Cấu hình ngoại vi GPIO
 
 
 </p>
