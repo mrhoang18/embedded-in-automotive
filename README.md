@@ -25,21 +25,17 @@ GPIO hoạt động ở các chế độ sau:
 
 ### GPIO Intput
 
-Ở chế độ này, chân GPIO được sử dụng để nhận tín hiệu từ bên ngoài 
-vào vi điều khiển.
+Ở chế độ này, chân GPIO được sử dụng để nhận tín hiệu từ bên ngoài vào vi điều khiển.
 
 Các loại Input Mode:
 
- - **Floating hay High-impedance (thả nổi)**: Chân GPIO không có trạng thái điện áp xác định khi
-  không có tín hiệu vào. 
+ - **Floating hay High-impedance (thả nổi)**: Chân GPIO không có trạng thái điện áp xác định khi không có tín hiệu vào. 
 
     Ví dụ:
 
-    Mắc một nút nhấn theo kiểu Floating như hình, khi không nhấn nút thì 
-    không có tín hiệu vào.
+    Mắc một nút nhấn theo kiểu Floating như hình, khi không nhấn nút thì không có tín hiệu vào.
 
-    Khi nhấn nút, VĐK nhận tín hiệu tùy vào chân còn lại của nút nhấn mắc
-    với Vcc hay Gnd (trong hình là Gnd, VĐK nhận mức thấp (0)).
+    Khi nhấn nút, VĐK nhận tín hiệu tùy vào chân còn lại của nút nhấn mắc với Vcc hay Gnd (trong hình là Gnd, VĐK nhận mức thấp (0)).
 
     <p align="center">
         <img src="image.png" alt="alt text" width="300">
@@ -51,8 +47,7 @@ Các loại Input Mode:
     
     Ví dụ: 
     
-    Mắc một nút nhấn theo kiểu pull-up như hình, khi không nhấn nút thì PMOS dẫn,
-    VĐK sẽ nhận mức cao (1).
+    Mắc một nút nhấn theo kiểu pull-up như hình, khi không nhấn nút thì PMOS dẫn, VĐK sẽ nhận mức cao (1).
     <p align="center">
         <img src="image-1.png" alt="alt text" width="300">
     </p>
@@ -66,8 +61,7 @@ Các loại Input Mode:
     
     Ví dụ: 
 
-    Mắc một nút nhấn theo kiểu pull-down như hình, khi không nhấn nút thì NMOS dẫn,
-    VĐK sẽ nhận mức thấp (0).
+    Mắc một nút nhấn theo kiểu pull-down như hình, khi không nhấn nút thì NMOS dẫn, VĐK sẽ nhận mức thấp (0).
 
     <p align="center">
         <img src="image-3.png" alt="alt text" width="300">
@@ -80,8 +74,7 @@ Các loại Input Mode:
 
 ### GPIO Input
 
-Ở chế độ này, chân GPIO được sử dụng để xuất tín hiệu ra bên ngoài từ 
-vi điều khiển.
+Ở chế độ này, chân GPIO được sử dụng để xuất tín hiệu ra bên ngoài từ vi điều khiển.
 
 Các loại Output Mode:
 
@@ -114,7 +107,6 @@ Các loại Output Mode:
     </p>
 
     _Nếu VĐK dùng mosfet thì gọi là Open-Drain, còn nếu dùng BJT gọi là Open-Collector._
-
 
 ### Analog
 
@@ -182,12 +174,9 @@ void GPIO_Config(){
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
 ```
-Việc cấu hình GPIO được thực hiện thông qua việc khai báo và sử dụng struct `GPIO_InitTypeDef`,
- trong đó chứa các tham số cấu hình cho một chân GPIO cụ thể:
+Việc cấu hình GPIO được thực hiện thông qua việc khai báo và sử dụng struct `GPIO_InitTypeDef`, trong đó chứa các tham số cấu hình cho một chân GPIO cụ thể:
 
- - **GPIO_Pin**: Xác định chân hoặc các chân GPIO muốn cấu hình bằng 
-  cách sử dụng các macro như `GPIO_Pin_0`, `GPIO_Pin_1`,... hoặc kết hợp
-  các chân bằng toán tử OR `|` nếu muốn cấu hình nhiều chân cùng lúc.
+ - **GPIO_Pin**: Xác định chân hoặc các chân GPIO muốn cấu hình bằng cách sử dụng các macro như `GPIO_Pin_0`, `GPIO_Pin_1`,... hoặc kết hợp các chân bằng toán tử OR `|` nếu muốn cấu hình nhiều chân cùng lúc.
 
     <p align="center">
         <img src="image-11.png" alt="alt text" width="500">
@@ -251,6 +240,66 @@ Một số hàm thao tác với GPIO:
 # LESSON 12: CAN(THEORY)
 <details><summary>Details</summary>
 <p>
+
+## 1. Giao thức CAN 
+
+Giao thức CAN (Controller Area Network) là một giao thức truyền thông phổ biến trong các hệ thống nhúng, đặc biệt là trong lĩnh vực ô tô.
+
+CAN hỗ trợ mạnh cho những hệ thống điều khiển thời gian thực phân bố (distributed real-time control system).
+
+**Distributed real-time control system:** Sẽ gồm nhiều khối thiết bị phân bố trên nhiều nơi trong hệ thống, giao tiếp với nhau thông qua CAN Bus trong thời gian thực.
+
+<p align="center">
+    <img src="image/can-1.png" alt="alt text" width="500">
+</p>
+
+## 2. Mạng CAN
+
+CAN sử dụng kiến trúc **bus topology**, tất cả các thiết bị đều được kết nối song song vào một cặp dây truyền thông chung được gọi là **CAN Bus** tạo thành **mạng CAN**.
+
+## 3. CAN Node
+
+Mỗi thiết bị trên mạng CAN được gọi là một **node**.
+
+Các node nếu muốn gửi và nhận dữ liệu CAN thì bên trong các node cần có những thành phần sau:
+
+ - **Vi điều khiển (Microcontroller)**: là thành phần trung tâm điều khiển hoạt động của node CAN.
+
+    + Đọc và xử lý thông điệp CAN.
+    + Tạo ra thông điệp CAN để truyền đi.
+	+ Quản lý các khung dữ liệu, bit arbitration và quá trình xử lý lỗi.
+	+ Điều khiển hành vi của node (Ví dụ: bật/tắt node, reset node khi gặp lỗi bus-off).
+
+ - **CAN Controller**: Đây là thành phần chính có nhiệm vụ xử lý toàn bộ giao tiếp CAN.
+	+ Gửi và nhận thông điệp CAN.
+	+ Điều khiển truy cập vào bus CAN (arbitration).
+	+ Phát hiện và xử lý các lỗi truyền thông CAN.
+	+ Kiểm soát việc truyền lại thông điệp khi gặp lỗi.
+	+ Cung cấp giao diện giữa các VĐK và bus CAN.
+
+ - **CAN Transceiver**:
+    + Chuyển đổi tín hiệu số từ bộ điều khiển CAN thành tín hiệu điện áp dạng differential (CANH và CANL) để gửi lên bus CAN và ngược lại.
+    + Đảm bảo tín hiệu truyền và nhận trên bus CAN có độ chính xác và tốc độ cao.
+
+    <p align="center">
+        <img src="image/can-2.png" alt="alt text" width="450">
+    </p>
+
+ - **Cảm biến (Sensor), cơ cấu chấp hành (Actuator)**:
+    + Nhiệt độ, áp suất lốp, tốc độ,...
+    + Mở cốp, điều khiển động cơ, bật đèn,...
+
+<p align="center">
+    <img src="image/can-3.png" alt="alt text" width="800">
+</p>
+
+## 4. CAN Bus
+
+CAN Bus gồm hai dây tín hiệu chính: CAN_H (CAN High) và CAN_L (CAN Low). 
+
+Các tín hiệu truyền qua bus CAN là tín hiệu vi sai, cụ thể là chênh lệch điện áp trên cặp dây tín hiệu.
+
+
 
 </p>
 </details>
