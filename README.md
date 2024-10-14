@@ -261,6 +261,10 @@ CAN sử dụng kiến trúc **bus topology**, tất cả các thiết bị đ�
 
 Mỗi thiết bị trên mạng CAN được gọi là một **node**.
 
+<p align="center">
+    <img src="image/can-3.png" alt="alt text" width="800">
+</p>
+
 Các node nếu muốn gửi và nhận dữ liệu CAN thì bên trong các node cần có những thành phần sau:
 
  - **Vi điều khiển (Microcontroller)**: là thành phần trung tâm điều khiển hoạt động của node CAN.
@@ -270,7 +274,7 @@ Các node nếu muốn gửi và nhận dữ liệu CAN thì bên trong các nod
 	+ Quản lý các khung dữ liệu, bit arbitration và quá trình xử lý lỗi.
 	+ Điều khiển hành vi của node (Ví dụ: bật/tắt node, reset node khi gặp lỗi bus-off).
 
- - **CAN Controller**: Đây là thành phần chính có nhiệm vụ xử lý toàn bộ giao tiếp CAN.
+ - **CAN Controller**: Đây là thành phần được tích hợp bên trong VĐK, có nhiệm vụ xử lý toàn bộ giao tiếp CAN.
 	+ Gửi và nhận thông điệp CAN.
 	+ Điều khiển truy cập vào bus CAN (arbitration).
 	+ Phát hiện và xử lý các lỗi truyền thông CAN.
@@ -289,15 +293,96 @@ Các node nếu muốn gửi và nhận dữ liệu CAN thì bên trong các nod
     + Nhiệt độ, áp suất lốp, tốc độ,...
     + Mở cốp, điều khiển động cơ, bật đèn,...
 
-<p align="center">
-    <img src="image/can-3.png" alt="alt text" width="800">
-</p>
-
 ## 4. CAN Bus
 
 CAN Bus gồm hai dây tín hiệu chính: CAN_H (CAN High) và CAN_L (CAN Low). 
 
 Các tín hiệu truyền qua bus CAN là tín hiệu vi sai, cụ thể là chênh lệch điện áp trên cặp dây tín hiệu.
+
+<p align="center">
+    <img src="image/can-4.png" alt="alt text" width="450">
+</p>
+
+Vì tính chất vi sai trên đường truyền tín hiệu của bus CAN, tín hiệu nhiễu sẽ ảnh hưởng đến giá trị điện áp.
+
+CAN bus thường được xoắn 2 dây vào nhau để triệt tiêu nhiễu.
+
+## 5. Dominant và Recessive
+
+Bus CAN định nghĩa hai trạng thái điện áp là: Dominant và Recessive. Tương đương với bit 0 và 1 của các giao thức khác. 
+
+Hai trạng thái này sẽ được xử lý bởi Transceiver của Node. 
+
+Theo tốc độ truyền nhận CAN, ta chia làm hai loại: CAN low speed và CAN high speed. Tương ứng với các giá trị điện áp khác nhau.
+
+ - CAN low speed:
+    + Bit Dominant: CAN_H = 4V, CAN_L = 1V.
+    + Bit Recessive: CAN_H = 1.75V, CAN_L = 3.25V. 
+    <p align="center">
+        <img src="image/can-5.png" alt="alt text" width="450">
+    </p>
+
+ - CAN high speed:
+    + Bit Dominant: CAN_H = 3.5V, CAN_H = 1.5V.
+    + Bit Recessive: CAN_H = CAN_L = 2.5V. 
+<p align="center">
+    <img src="image/can-6.png" alt="alt text" width="450">
+</p>
+
+## 5. Các đặc điểm của giao thức CAN 
+**Phần này quan trọng!**
+### Không tuân theo kiến trúc Master-Slave: 
+
+Tất cả các thiết bị trên bus đều có quyền ngang nhau trong việc truyền dữ liệu mà không cần phải có thiết bị chủ điều khiển. 
+
+Điều này cho phép mạng hoạt động linh hoạt hơn, khi bất kỳ node nào cũng có thể truyền hoặc nhận thông tin bất cứ lúc nào.
+
+
+### Quá trình Arbitration 
+
+Tất cả các node trong mạng CAN đều có quyền bắt đầu truyền dữ liệu cùng lúc, nghĩa là chúng có thể bắt đầu phát tín hiệu trên bus mà không cần phải đợi lần lượt. 
+
+Tuy nhiên, đây là chỉ là bước bắt đầu quá trình truyền, và chỉ một node thực sự có thể truyền dữ liệu cuối cùng sau **quá trình Arbitration**:
+
+ - Mỗi thông điệp CAN có một **ID ưu tiên**. Node nào có thông điệp với giá trị ID càng bé thì được độ ưu tiên cao hơn và sẽ chiếm quyền truy cập bus và gửi thông điệp trước.
+
+ - Những node khác có giá trị ID lớn hơn sẽ tự động dừng lại và chờ lượt tiếp theo để gửi thông điệp.
+
+    **Ví dụ: Chọn CAN low speed, có 3 node tham gia gửi.**
+
+    Lưu ý: ID Node-2 > ID Node-1 > ID Node-3 (0x676 > 0x65D > 0x659)
+
+    Đoạn giải thích dưới đây nhằm xoáy sâu vào luận điểm "ID càng bé thì ưu tiên càng cao", thực chất chỉ là kiểm tra từng bit theo giá trị binary, bit ID là Dominant sẽ được ưu tiên hơn.
+
+    <p align="center">
+    <img src="image/can-7.png" alt="alt text" width="500">
+    </p>
+
+    + Quá trình Arbitration sẽ lần lượt kiểm tra từng bit ID từ MSB tới LSB.
+    + Khi đến bit thứ 5, phát hiện bit thứ 5 của ID Node-2 là Recessive nên Node-2 vào hàng chờ và chỉ nghe.
+    + Và nếu kiểm tra tiếp thì đến bit thứ 3, phát hiện bit thứ 3 của ID Node-1 là Recessive nên Node-1 tiếp tục vào hàng chờ và chỉ nghe.
+    + Node-3 thắng và sẽ được gửi.
+
+ - Quá trình Arbitration diễn ra mà không gây mất dữ liệu hay làm gián đoạn các thiết bị khác, vì thế mạng CAN là một hệ thống non-destructive (không gây mất dữ liệu).
+
+### Broadcast Communication
+
+Khi một node được chọn để gửi thông điệp, thông điệp đó sẽ được gửi đến tất cả các node khác trên bus. 
+
+Tuy nhiên, không phải tất cả các node đều xử lý thông điệp này. Mỗi node sẽ sử dụng bộ lọc để kiểm tra xem thông điệp có phù hợp với mình hay không.
+
+### Giao tiếp song công (Full-duplex Communication)
+Mặc dù chỉ sử dụng một bus với hai dây tín hiệu, mạng CAN vẫn cho phép các node vừa gửi vừa nhận dữ liệu đồng thời. Điều này giúp mạng CAN hoạt động hiệu quả và không bị nghẽn khi có nhiều thiết bị cùng giao tiếp.
+
+### Phát hiện và xử lý lỗi tự động
+
+Một tính năng quan trọng khác của mạng CAN là khả năng tự động phát hiện và xử lý lỗi. Nếu một node phát hiện ra lỗi trong quá trình truyền hoặc nhận dữ liệu (do nhiễu, mất gói, hoặc lỗi tín hiệu), node đó sẽ gửi một Error Frame để thông báo cho các node khác rằng dữ liệu bị lỗi. Sau đó, thông điệp sẽ được truyền lại.
+
+## 6. CAN Frame
+**Phần này quan trọng!**
+
+Dữ liệu CAN được truyền dưới dạng các Frame (khung). Một khung có dạng chung như sau:
+
 
 
 
