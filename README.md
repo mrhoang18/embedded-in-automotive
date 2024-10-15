@@ -378,12 +378,88 @@ Mặc dù chỉ sử dụng một bus với hai dây tín hiệu, mạng CAN v�
 
 Một tính năng quan trọng khác của mạng CAN là khả năng tự động phát hiện và xử lý lỗi. Nếu một node phát hiện ra lỗi trong quá trình truyền hoặc nhận dữ liệu (do nhiễu, mất gói, hoặc lỗi tín hiệu), node đó sẽ gửi một Error Frame để thông báo cho các node khác rằng dữ liệu bị lỗi. Sau đó, thông điệp sẽ được truyền lại.
 
+## 6. Các phiên bản của CAN
+
+Trước khi vào phần CAN Frame phải qua phần này trước vì có sự khác nhau trong Frame của các phiên bản CAN.
+
+Giao thức CAN đã phát triển qua nhiều phiên bản để đáp ứng nhu cầu ngày càng cao trong các ứng đặc biệt là công nghiệp ô tô.
+
+Các phiên bản CAN bao gồm: CAN 2.0A (Standard CAN), CAN 2.0B (Extended CAN), và CAN FD (Flexible Data-rate).
+
+Mỗi phiên bản có những cải tiến để hỗ trợ các yêu cầu khác nhau về độ ưu tiên, dung lượng dữ liệu và tốc độ truyền tải
 ## 6. CAN Frame
 **Phần này quan trọng!**
 
-Dữ liệu CAN được truyền dưới dạng các Frame (khung). Một khung có dạng chung như sau:
+_Chú thích: Frame (Khung), Field (Trường)._
 
+CAN sử dụng các Frame để truyền dữ liệu giữa các thiết bị trong mạng.
 
+Mạng CAN hỗ trợ nhiều loại CAN Frame khác nhau như: Data Frame, Remote Frame, Error Frame, và Overload Frame.
+
+Trong mỗi Frame gồm nhiều Field khác nhau, mỗi Field đều đóng vai trò khác nhau, cụ thể là gì thì xem trong phần tiếp theo. 
+
+### Data Frame
+
+Đây là loại khung phổ biến nhất và được sử dụng để truyền dữ liệu chính trên mạng CAN.
+
+Có hai phiên bản của Data Frame của ứng với hai phiên bản: 
+
+- Standard Data Frame (CAN 2.0A): sử dụng 11 bit ID.
+- Extended Data Frame (CAN 2.0B): nâng cấp lên 29 bit ID.
+
+Data Frame có các thành phần sau:
+
+<p align="center">
+<img src="image/can-8.png" alt="alt text" width="500">
+</p>
+
+Giữa Standard Data Frame và Extended Data Frame chỉ khác nhau ở Arbitration Field và Control Field.
+
+#### S0F - Start Of Frame 
+
+Độ dài 1 bit, báo hiệu một khung dữ liệu mới đang bắt đầu, luôn có giá trị Dominant. 
+
+Tất cả các node trên mạng sẽ nhận biết rằng đây là thời điểm để bắt đầu đọc dữ liệu.
+
+#### Arbitration Field
+
+**Đối với Standard (CAN 2.0A)**:
+
+<p align="center">
+    <img src="image/can-9.png" alt="alt text" width="150">
+</p>
+
+ - **Identifier**: Độ dài 11 bits, được sử dụng để xác định mức độ ưu tiên trong quá trình Arbitration.
+
+ - **RTR - Remote Transmission Request**: Độ dài 1 bit, đối với Data Frame có giá trị Dominant  (Remote Frame là Recessive) báo hiệu rằng đây là một yêu cầu dữ liệu từ một node khác.
+
+**Đối với Extended (CAN 2.0B)**:
+
+<p align="center">
+    <img src="image/can-10.png" alt="alt text" width="400">
+</p>
+
+ - **Base Identifier**: Độ dài 11 bits, giống như trong Standard Frame.
+
+ - **SRR - Substitute Remote Request**: Độ dài 1 bit, chỉ có ở Extended Frame, giá trị luôn là Recessive.
+
+ - **IDE**: Độ dài 1 bit, để phân biệt giữa Standard Frame (IDE = 0) và Extended Frame (IDE = 1).
+
+ - **Extended Identifier**: Độ dài 18 bits, ID mở rộng thêm, chỉ có ở Extended Frame.
+
+ - **RTR - Remote Transmission Request**: Độ dài 1 bit, giống như trong Standard Frame.
+ 
+#### Control Field
+
+Control Field chứa các thông tin về kích thước của phần dữ liệu.
+
+#### Data Field
+
+#### CRC Field 
+
+#### ACK Field 
+
+#### End of Frame (EOF)
 
 
 </p>
