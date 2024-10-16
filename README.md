@@ -38,7 +38,7 @@ Các loại Input Mode:
     Khi nhấn nút, VĐK nhận tín hiệu tùy vào chân còn lại của nút nhấn mắc với Vcc hay Gnd (trong hình là Gnd, VĐK nhận mức thấp (0)).
 
     <p align="center">
-        <img src="image.png" alt="alt text" width="300">
+        <img src="image/gpio.png" alt="alt text" width="300">
     </p>
 
     _Không nên sử dụng mode này! Dễ bị nhiễu lúc không có tín hiệu và tốn năng lượng_
@@ -49,12 +49,12 @@ Các loại Input Mode:
     
     Mắc một nút nhấn theo kiểu pull-up như hình, khi không nhấn nút thì PMOS dẫn, VĐK sẽ nhận mức cao (1).
     <p align="center">
-        <img src="image-1.png" alt="alt text" width="300">
+        <img src="image/gpio-1.png" alt="alt text" width="300">
     </p>
 
     Ngược lại khi nhấn nút, NMOS dẫn thì VĐK nhận mức thấp (0).
     <p align="center">
-        <img src="image-2.png" alt="alt text" width="300">
+        <img src="image/gpio-2.png" alt="alt text" width="300">
     </p>
 
  - **Pull-down (điện trở kéo xuống)**: Chân GPIO ở mức thấp khi không có tín hiệu đầu vào.
@@ -64,12 +64,12 @@ Các loại Input Mode:
     Mắc một nút nhấn theo kiểu pull-down như hình, khi không nhấn nút thì NMOS dẫn, VĐK sẽ nhận mức thấp (0).
 
     <p align="center">
-        <img src="image-3.png" alt="alt text" width="300">
+        <img src="image/gpio-3.png" alt="alt text" width="300">
     </p>
 
     Ngược lại khi nhấn nút, PMOS dẫn thì VĐK nhận mức cao (1).
     <p align="center">
-        <img src="image-4.png" alt="alt text" width="300">
+        <img src="image/gpio-4.png" alt="alt text" width="300">
     </p>
 
 ### GPIO Input
@@ -84,12 +84,12 @@ Các loại Output Mode:
 
     Khi VĐK xuất mức cao (1), PMOS dẫn và chân GPIO sẽ ở mức cao (1).
     <p align="center">
-        <img src="image-5.png" alt="alt text" width="200">
+        <img src="image/gpio-5.png" alt="alt text" width="200">
     </p>
 
     Ngược lại, VĐK xuất mức thấp (0), NMOS dẫn và chân GPIO sẽ ở mức thấp (0).
     <p align="center">
-        <img src="image-6.png" alt="alt text" width="200">
+        <img src="image/gpio-6.png" alt="alt text" width="200">
     </p>
 
  - Open-Drain: Chân GPIO chỉ  có thể xuất ra mức thấp (0) hoặc ở trạng thái "thả nổi".
@@ -103,7 +103,7 @@ Các loại Output Mode:
     Khi VĐK xuất mức thấp (0), NMOS dẫn và chân GPIO sẽ ở mức thấp (0).
 
     <p align="center">
-        <img src="image-7.png" alt="alt text" width="200">
+        <img src="image/gpio-7.png" alt="alt text" width="200">
     </p>
 
     _Nếu VĐK dùng mosfet thì gọi là Open-Drain, còn nếu dùng BJT gọi là Open-Collector._
@@ -133,7 +133,7 @@ Ví dụ các chức năng thay thế: chân Rx/Tx cho giao tiếp UART, chân S
 Để sử dụng một ngoại vi bất kì phải trải qua các bước sau:
 
 <p align="center">
-    <img src="image-8.png" alt="alt text" width="500">
+    <img src="image/gpio-8.png" alt="alt text" width="500">
 </p>
 
 Như các thư viện khác (HAL, LL, CMSIS,...), SPL cung cấp các hàm và các định nghĩa giúp việc cấu hình và sử dụng ngoại vi.
@@ -147,7 +147,7 @@ STM32 sử dụng các bus (như AHB, APB1, APB2) để giao tiếp với các n
 Tra thông tin clock trong Reference (trang 92) và Data sheet (trang 11) để biết được bus nào cần được cấp xung.
 
 <p align="center">
-    <img src="image-9.png" alt="alt text" width="300">
+    <img src="image/gpio-9.png" alt="alt text" width="300">
 </p>
 
 Trong SPL, để bật xung clock cho ngoại vi GPIO:
@@ -179,19 +179,19 @@ Việc cấu hình GPIO được thực hiện thông qua việc khai báo và s
  - **GPIO_Pin**: Xác định chân hoặc các chân GPIO muốn cấu hình bằng cách sử dụng các macro như `GPIO_Pin_0`, `GPIO_Pin_1`,... hoặc kết hợp các chân bằng toán tử OR `|` nếu muốn cấu hình nhiều chân cùng lúc.
 
     <p align="center">
-        <img src="image-11.png" alt="alt text" width="500">
+        <img src="image/gpio-11.png" alt="alt text" width="500">
     </p>
 
  - **GPIO_Mode**: Xác định mode hoạt động của chân GPIO.
 
     <p align="center">
-        <img src="image-10.png" alt="alt text" width="250">
+        <img src="image/gpio-10.png" alt="alt text" width="250">
     </p>
 
  - **GPIO_Speed**: Chọn tốc độ đáp ứng của chân GPIO.
 
     <p align="center">
-        <img src="image-12.png" alt="alt text" width="200">
+        <img src="image/gpio-12.png" alt="alt text" width="200">
     </p>
 
 Hàm khởi tạo GPIO_Init() nhận 2 tham số: 
