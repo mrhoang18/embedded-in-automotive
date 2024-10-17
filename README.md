@@ -237,17 +237,15 @@ Một số hàm thao tác với GPIO:
 </p>
 </details>
 
-# LESSON 12: CAN (THEORY)
+# LESSON 12: CAN - CONTROLLER AREA NETWORK
 <details><summary>Details</summary>
 <p>
 
 ## 1. Giao thức CAN 
 
-Giao thức CAN (Controller Area Network) là một giao thức truyền thông phổ biến trong các hệ thống nhúng, đặc biệt là trong lĩnh vực ô tô.
+CAN là một giao thức truyền thông phổ biến trong các hệ thống nhúng, đặc biệt là trong lĩnh vực ô tô.
 
 CAN hỗ trợ mạnh cho những hệ thống điều khiển thời gian thực phân bố (distributed real-time control system).
-
-**Distributed real-time control system:** Sẽ gồm nhiều khối thiết bị phân bố trên nhiều nơi trong hệ thống, giao tiếp với nhau thông qua CAN Bus trong thời gian thực.
 
 <p align="center">
     <img src="image/can-1.png" alt="alt text" width="500">
@@ -259,22 +257,22 @@ CAN sử dụng kiến trúc **bus topology**, tất cả các thiết bị đ�
 
 ## 3. CAN Node
 
-Mỗi thiết bị trên mạng CAN được gọi là một **node**.
+Mỗi thiết bị trên mạng CAN được gọi là node.
 
 <p align="center">
     <img src="image/can-3.png" alt="alt text" width="800">
 </p>
 
-Các node nếu muốn gửi và nhận dữ liệu CAN thì bên trong các node cần có những thành phần sau:
+Thành phần trong một node:
 
- - **Vi điều khiển (Microcontroller)**: là thành phần trung tâm điều khiển hoạt động của node CAN.
+ - **Vi điều khiển (Microcontroller)**: Điều khiển hoạt động của node CAN.
 
     + Đọc và xử lý thông điệp CAN.
     + Tạo ra thông điệp CAN để truyền đi.
 	+ Quản lý các khung dữ liệu, bit arbitration và quá trình xử lý lỗi.
-	+ Điều khiển hành vi của node (Ví dụ: bật/tắt node, reset node khi gặp lỗi bus-off).
+	+ Bật/tắt node, reset node khi gặp lỗi bus-off.
 
- - **CAN Controller**: Đây là thành phần được tích hợp bên trong VĐK, có nhiệm vụ xử lý toàn bộ giao tiếp CAN.
+ - **CAN Controller**: Được tích hợp bên trong VĐK, có nhiệm vụ xử lý toàn bộ giao tiếp CAN.
 	+ Gửi và nhận thông điệp CAN.
 	+ Điều khiển truy cập vào bus CAN (arbitration).
 	+ Phát hiện và xử lý các lỗi truyền thông CAN.
@@ -295,15 +293,13 @@ Các node nếu muốn gửi và nhận dữ liệu CAN thì bên trong các nod
 
 ## 4. CAN Bus
 
-CAN Bus gồm hai dây tín hiệu chính: CAN_H (CAN High) và CAN_L (CAN Low). 
+Gồm hai dây tín hiệu: CAN_H (CAN High) và CAN_L (CAN Low). 
 
-Các tín hiệu truyền qua bus CAN là tín hiệu vi sai, cụ thể là chênh lệch điện áp trên cặp dây tín hiệu.
+Các tín hiệu truyền qua bus CAN là tín hiệu vi sai - chênh lệch điện áp trên hai dây.
 
 <p align="center">
     <img src="image/can-4.png" alt="alt text" width="450">
 </p>
-
-Vì tính chất vi sai trên đường truyền tín hiệu của bus CAN, tín hiệu nhiễu sẽ ảnh hưởng đến giá trị điện áp.
 
 CAN bus thường được xoắn 2 dây vào nhau để triệt tiêu nhiễu.
 
@@ -338,7 +334,7 @@ Tất cả các thiết bị trên bus đều có quyền ngang nhau trong việ
 Điều này cho phép mạng hoạt động linh hoạt hơn, khi bất kỳ node nào cũng có thể truyền hoặc nhận thông tin bất cứ lúc nào.
 
 
-### Quá trình Arbitration 
+### Quá trình tranh chấp quyền gửi (Arbitration)
 
 Tất cả các node trong mạng CAN đều có quyền bắt đầu truyền dữ liệu cùng lúc, nghĩa là chúng có thể bắt đầu phát tín hiệu trên bus mà không cần phải đợi lần lượt. 
 
@@ -393,123 +389,92 @@ Mỗi phiên bản có những cải tiến để hỗ trợ các yêu cầu kh�
 
 _Chú thích: Frame (Khung), Field (Trường)._
 
-CAN sử dụng các Frame để truyền dữ liệu giữa các thiết bị trong mạng.
-
-Mạng CAN hỗ trợ nhiều loại CAN Frame khác nhau như: Data Frame, Remote Frame, Error Frame, và Overload Frame.
-
-Trong mỗi Frame gồm nhiều Field khác nhau, mỗi Field đều đóng vai trò khác nhau, cụ thể là gì thì xem trong phần tiếp theo. 
+Mạng CAN hỗ trợ: Data Frame, Remote Frame, Error Frame và Overload Frame.
 
 ### Data Frame
 
-Đây là loại khung phổ biến nhất và được sử dụng để truyền dữ liệu chính trên mạng CAN.
+Dùng để truyền dữ liệu.
 
-Có hai phiên bản của Data Frame của ứng với hai phiên bản: 
+Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộng (CAN 2.0B).
 
-- Standard Data Frame (CAN 2.0A): sử dụng 11 bit ID.
-- Extended Data Frame (CAN 2.0B): nâng cấp lên 29 bit ID.
-
-Data Frame có các thành phần sau:
+**Khung tiêu chuẩn**:
 
 <p align="center">
-<img src="image/can-8.png" alt="alt text" width="500">
+    <img src="image/can-8.png" alt="alt text" width="800">
 </p>
 
-Giữa Standard Data Frame và Extended Data Frame chỉ khác nhau ở Arbitration Field và Control Field.
+ - **S0F - Start Of Frame**: Luôn là Dominant, bắt đầu thông điệp. 
 
-**S0F - Start Of Frame** 
+ - **Identifier**: Xác định mức độ ưu tiên.
 
-<p align="center">
-    <img src="image/can-11.png" alt="alt text" width="60">
-</p>
+ - **RTR - Remote Transmission Request**: Phân biệt Data Frame (=Dominant) và Remote Frame (=Recessive).
 
-Độ dài 1 bit, luôn có giá trị Dominant (0), báo hiệu với các node một thông điệp mới đang bắt đầu. 
+ - **IDE - Identifier Extension**: Phân biệt khung tiêu chuẩn (=Dominant) và khung mở rộng (=Recessive).
 
-**Arbitration Field**
+ - **r**: Mặc định là Recessive, bit này không quan trọng.
 
-Khung CAN (CAN 2.0A) tiêu chuẩn có ID 11 bit trong khi khung CAN (CAN 2.0B) mở rộng có ID 29 bit.
+ - **DLC - Data Length Code**: Giá trị (0 - 8 theo Binary) ứng với số byte dữ liệu.
 
- - **Đối với Standard (CAN 2.0A)**
+ - **Data**: Dữ liệu.
 
-    <p align="center">
-        <img src="image/can-9.png" alt="alt text" width="150">
-    </p>
+ - **CRC Sequenece - Cyclic Redundancy Check**: 
 
-    - **Identifier**: Độ dài 11 bits, được sử dụng để xác định mức độ ưu tiên trong quá trình Arbitration.
+ - **DEL - CRC Delimiter**: Luôn là Recessive.
 
-    - **RTR - Remote Transmission Request**: Độ dài 1 bit, đối với Data Frame có giá trị Dominant  (Remote Frame là Recessive) báo hiệu rằng đây là một yêu cầu dữ liệu từ một node khác.
+ - **ACK - Acknowledge**:
 
- - **Đối với Extended (CAN 2.0B)**
+ - **DEL - ACK Delimiter**: Luôn là Recessive.
 
-    <p align="center">
-        <img src="image/can-10.png" alt="alt text" width="400">
-    </p>
+ - **EOF - End Of Frame**: 7 bits Recessive, kết thúc thông điệp.
 
-    + **Base Identifier**: Độ dài 11 bits, giống như trong Standard Frame.
+**Khung mở rộng:**
 
-    + **SRR - Substitute Remote Request**: Độ dài 1 bit, chỉ có ở Extended Frame, giá trị luôn là Recessive.
+  - **S0F - Start Of Frame**: Luôn có giá trị Dominant, báo hiệu với các node một thông điệp mới đang bắt đầu. 
 
-    + **IDE - Identifier Extension**: Độ dài 1 bit, để phân biệt giữa Standard Frame (IDE = 0) và Extended Frame (IDE = 1).
+ - **Base Identifier**: xác định mức độ ưu tiên.
 
-    + **Extended Identifier**: Độ dài 18 bits, ID mở rộng thêm, chỉ có ở Extended Frame.
+ - **SRR - Substitute Remote Request**: Độ dài 1 bit, chỉ có ở Extended Frame, giá trị luôn là Recessive.
 
-    + **RTR - Remote Transmission Request**: Độ dài 1 bit, giống như trong Standard Frame.
+ - **IDE - Identifier Extension**: Phân biệt khung tiêu chuẩn (=Dominant) và khung mở rộng (=Recessive).
 
-**Control Field**
+ - **Extended Identifier**: ID mở rộng.
 
- - **Đối với Standard (CAN 2.0A)**
-    <p align="center">
-        <img src="image/can-12.png" alt="alt text" width="170">
-    </p>
+ - **RTR - Remote Transmission Request**: Phân biệt Data Frame (=Dominant) và Remote Frame (=Recessive).
 
-    + **IDE - Identifier Extension**: Giống với IDE trong Arbitration Field của Extended Frame.
-    + **r**:
-    + **DLC - Data Length Code**:
+ - **r1, r0**: Mặc định là Recessive, bit này không quan trọng.
 
- - **Đối với Standard (CAN 2.0B)**
+ - **DLC - Data Length Code**: Giá trị (0 - 8 theo Binary) ứng với số byte dữ liệu.
 
-    <p align="center">
-        <img src="image/can-13.png" alt="alt text" width="170">
-    </p>
-    
+ - **Data**: Dữ liệu.
 
-Control Field chứa các thông tin về kích thước của phần dữ liệu.
+ - **CRC - Cyclic Redundancy Check**:
 
-**Data Field**
+ - **CRC Sequence**:
 
-**CRC Field - Cyclic Redundancy Check Field**
+ - **CRC Delimiter**: Luôn là Recessive.
 
- - CRC Sequence: gồm 15 bit CRC tuần tự.
+ - **ACK Field - Acknowledge Field**:
 
- - CRC Delimiter: là một Recessive Bit làm nhiệm vụ .phân cách trường CRC với trường phía sau.
+ - **ACK Slot**: Độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là Recessive. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền Dominant Bit ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
 
-**ACK Field - Acknowledge Field** 
+ - **ACK Delimiter**: Độ dài 1 bit, luôn có giá trị Recessive (1).
 
- - ACK Slot: Độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là Recessive. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền Dominant Bit ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
-
- - ACK Delimiter: Độ dài 1 bit, luôn có giá trị Recessive (1).
-
-**EOF - End of Frame**: Độ dài 7 bits, luôn có giá trị Recessive (1), báo hiệu với các node thông điệp đã kết thúc. 
-
-
+ - **EOF - End of Frame**: 7 bits Recessive, kết thúc thông điệp.
 
 ### Remote Frame
 
 ### Error Frame
 
-Error Frame được sử dụng khi một node phát hiện ra lỗi trong quá trình truyền dữ liệu. Nó được gửi để thông báo cho các node khác rằng có lỗi đã xảy ra trên bus. Bất kỳ node nào phát hiện ra lỗi đều có thể gửi Error Frame.
+Được một node bất kì gửi đi khi phát hiện thông điệp mình vừa nhận không hợp lệ và phải gửi lại.
 
-Error Frame có vai trò rất quan trọng trong việc duy trì độ tin cậy của mạng CAN. Khi một lỗi xảy ra, Error Frame sẽ báo hiệu để các node khác biết rằng thông điệp vừa được truyền không hợp lệ và cần được truyền lại.
-
-Error Frame gồm hai phần: Error Flag và Error Delimiter. Error Flag là chuỗi từ 6 đến 12 bit dominant, báo hiệu lỗi. Error Delimiter là chuỗi 8 bit recessive, kết thúc Error Frame.
+Error Frame gồm hai phần: 
+ - Error Flag là chuỗi từ 6 đến 12 bit dominant, báo hiệu lỗi. 
+ - Error Delimiter là chuỗi 8 bit recessive, kết thúc Error Frame.
 
 
 ### Overload Frame
 
-Overload Frame được sử dụng để báo hiệu rằng một node đang trong trạng thái bận và không thể xử lý thêm thông điệp nào ngay lập tức. Điều này có thể xảy ra khi một node chưa xử lý xong thông điệp trước đó hoặc hệ thống quá tải.
-
-Khi một node gửi Overload Frame, nó báo hiệu cho các node khác trên mạng rằng chúng cần dừng truyền thông trong một thời gian ngắn để giảm tải cho node đó.
-
-
+Được một node gửi đi khi nó đang bận xử lý thông điệp hiện tại và yêu cầu các node khác tạm thời dừng truyền cho nó.
 
 </p>
 </details>
@@ -521,13 +486,13 @@ Khi một node gửi Overload Frame, nó báo hiệu cho các node khác trên m
 </p>
 </details>
 
-# LESSON 14: LIN 
+# LESSON 14: LIN - LOCAL INTERCONNECT NETWORK
 <details><summary>Details</summary>
 <p>
 
 ## 1. Giao thức LIN
 
-LIN (Local Interconnect Network) sinh ra nhằm giảm thiểu sự phức tạp và chi phí trong việc truyền thông giữa các thiết bị điện tử đơn giản trong xe.
+LIN sinh ra nhằm giảm sự phức tạp và chi phí trong việc truyền thông giữa các thiết bị điện tử đơn giản trong xe.
 
 <p align="center">
     <img src="image/lin-1.png" alt="alt text" width="600">
