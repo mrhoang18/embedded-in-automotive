@@ -1,14 +1,9 @@
-# embedded-in-automotive
-stm32f1, CAN, LIN, AUTOSAR
 # LESSON 1: SET UP AND CREATE NEW PROJECTS IN KEILC
 <details><summary>Details</summary>
 <p>
 
 </p>
 </details>
-
-
-
 
 # LESSON 2: GPIO
 <details><summary>Details</summary>
@@ -234,6 +229,110 @@ Một số hàm thao tác với GPIO:
     ```
 ## 4. Bài tập (Xem trong folder: lesson-2-GPIO)
 
+</p>
+</details>
+
+
+# LESSON 3: INTERRUPTS AND TIMER
+<details><summary>Details</summary>
+<p>
+
+</p>
+</details>
+
+# LESSON 04: CÁC CHUẨN GIAO TIẾP CƠ BẢN
+<details><summary>Details</summary>
+<p>
+
+## 1. SPI
+
+## Đặc điểm và cấu trúc vật lý
+
+SPI là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, song công (truyền nhận cùng một lúc được), 4 dây.
+
+<p align="center">
+    <img src="image/com-1.png" alt="alt text" width="350">
+</p>
+
+Bốn chân giao tiếp gồm:
+ - SCK (Serial Clock): Master tạo xung tín hiệu SCK và cung cấp cho Slave.
+ - MISO (Master Input Slave Output): Tín hiệu tạo bởi Slave và nhận bởi Master.
+ - MOSI (Master Output Slave Input): Tín hiệu tạo bởi Master và nhận bởi Slave. 
+ - SS (Đôi khi CS- Slave Select/Chip Select): Chọn Slave cụ thể để giao tiếp bằng cách xuất tín hiệu đường SS tương ứng xuống mức 0 (Low). 
+
+## Quá trình truyền nhận
+
+
+Bắt đầu quá trình, master sẽ kéo chân CS của slave muốn giao tiếp xuống 0 để báo hiệu muốn truyền nhận.
+Clock sẽ được cấp bởi master, tùy vào chế độ được cài, với mỗi xungc clock,  1 bit sẽ được truyền từ master đến slave và slave cũng truyền 1 bit cho master.
+Các thanh ghi cập nhật giá trị và dịch 1 bit.
+Lặp lại quá trình trên đến khi truyền xong 8 bit trong thanh ghi.
+Giao tiếp song công.
+
+## Các chế độ hoạt động
+
+## 2. I2C
+## Đặc điểm và cấu trúc vật lý
+
+I2C là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, bán song công (chỉ truyền hoặc nhận tại một thời điểm), 2 dây.
+
+## Quá trình truyền nhận
+## Các chế độ hoạt động
+
+
+## 2. UART
+## Đặc điểm và cấu trúc vật lý
+
+UART là chuẩn giao tiếp nối tiếp, không đồng bộ, song công, 2 dây
+
+
+## Quá trình truyền nhận
+## Các chế độ hoạt động
+
+</p>
+</details>
+
+
+
+# LESSON 05: SPI
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 06: I2C
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 07: UART
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 08: EXTERNAL, TIMER, COMMUNICATION INTERRUPTS
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 09: ADC
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 10: DMA
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 11: BOOTLOADER
+<details><summary>Details</summary>
+<p>
 </p>
 </details>
 
