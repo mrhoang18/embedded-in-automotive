@@ -1,11 +1,11 @@
-# LESSON 1: SET UP AND CREATE NEW PROJECTS IN KEILC
+# LESSON 01: SET UP AND CREATE NEW PROJECTS IN KEILC
 <details><summary>Details</summary>
 <p>
 
 </p>
 </details>
 
-# LESSON 2: GPIO
+# LESSON 02: GPIO
 <details><summary>Details</summary>
 <p>
 
