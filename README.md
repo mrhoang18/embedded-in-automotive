@@ -430,7 +430,7 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 **Khung mở rộng:**
 
 <p align="center">
-    <img src="image/can-9.png" alt="alt text" width="800">
+    <img src="image/can-9.png" alt="alt text" width="1000">
 </p>
 
   - **S0F - Start Of Frame**: Luôn có giá trị Dominant, báo hiệu với các node một thông điệp mới đang bắt đầu. 
@@ -455,7 +455,7 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
  - **DEL - CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
 
- - **ACK - Acknowledge**: Để node nhận ghi vào sau khi kiểm tra lỗi ở CRC, Không có lỗi = Dominant và có lỗi = Recessive.
+ - **ACK - Acknowledge**: Để node nhận ghi vào sau khi kiểm tra lỗi ở CRC, không lỗi = Dominant và có lỗi = Recessive.
 
  - **DEL - ACK Delimiter**: Luôn là Recessive.
 
