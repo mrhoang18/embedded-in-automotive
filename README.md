@@ -307,7 +307,7 @@ CAN bus thường được xoắn 2 dây vào nhau để triệt tiêu nhiễu.
 
 Bus CAN định nghĩa hai trạng thái điện áp là: Dominant và Recessive. Tương đương với bit 0 và 1 của các giao thức khác. 
 
-Hai trạng thái này sẽ được xử lý bởi Transceiver của Node. 
+Hai trạng thái này sẽ được xử lý bởi Transceiver. 
 
 Theo tốc độ truyền nhận CAN, ta chia làm hai loại: CAN low speed và CAN high speed. Tương ứng với các giá trị điện áp khác nhau.
 
@@ -411,23 +411,27 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
  - **IDE - Identifier Extension**: Phân biệt khung tiêu chuẩn (=Dominant) và khung mở rộng (=Recessive).
 
- - **r**: Mặc định là Recessive, bit này không quan trọng.
+ - **r0**: Mặc định là Dominant, hiện tại không có chức năng cụ thể, không quan trọng.
 
  - **DLC - Data Length Code**: Giá trị (0 - 8 theo Binary) ứng với số byte dữ liệu.
 
  - **Data**: Dữ liệu.
 
- - **CRC Sequenece - Cyclic Redundancy Check**: 
+ - **CRC - Cyclic Redundancy Check**: Kiểm tra lỗi thông điệp.
 
- - **DEL - CRC Delimiter**: Luôn là Recessive.
+ - **DEL - CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
 
- - **ACK - Acknowledge**:
+ - **ACK - Acknowledge**: Để node nhận ghi vào sau khi kiểm tra lỗi ở CRC, Không có lỗi = Dominant và có lỗi = Recessive.
 
  - **DEL - ACK Delimiter**: Luôn là Recessive.
 
  - **EOF - End Of Frame**: 7 bits Recessive, kết thúc thông điệp.
 
 **Khung mở rộng:**
+
+<p align="center">
+    <img src="image/can-9.png" alt="alt text" width="800">
+</p>
 
   - **S0F - Start Of Frame**: Luôn có giá trị Dominant, báo hiệu với các node một thông điệp mới đang bắt đầu. 
 
@@ -441,25 +445,21 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
  - **RTR - Remote Transmission Request**: Phân biệt Data Frame (=Dominant) và Remote Frame (=Recessive).
 
- - **r1, r0**: Mặc định là Recessive, bit này không quan trọng.
+ - **r1, r0**: Mặc định là Dominant, hiện tại không có chức năng cụ thể, không quan trọng.
 
  - **DLC - Data Length Code**: Giá trị (0 - 8 theo Binary) ứng với số byte dữ liệu.
 
  - **Data**: Dữ liệu.
 
- - **CRC - Cyclic Redundancy Check**:
+ - **CRC - Cyclic Redundancy Check**: Kiểm tra lỗi thông điệp.
 
- - **CRC Sequence**:
+ - **DEL - CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
 
- - **CRC Delimiter**: Luôn là Recessive.
+ - **ACK - Acknowledge**: Để node nhận ghi vào sau khi kiểm tra lỗi ở CRC, Không có lỗi = Dominant và có lỗi = Recessive.
 
- - **ACK Field - Acknowledge Field**:
+ - **DEL - ACK Delimiter**: Luôn là Recessive.
 
- - **ACK Slot**: Độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là Recessive. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền Dominant Bit ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
-
- - **ACK Delimiter**: Độ dài 1 bit, luôn có giá trị Recessive (1).
-
- - **EOF - End of Frame**: 7 bits Recessive, kết thúc thông điệp.
+ - **EOF - End Of Frame**: 7 bits Recessive, kết thúc thông điệp.
 
 ### Remote Frame
 
