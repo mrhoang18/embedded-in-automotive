@@ -419,11 +419,11 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
  - **CRC - Cyclic Redundancy Check**: Kiểm tra lỗi thông điệp.
 
- - **DEL - CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
+ - **CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
 
  - **ACK - Acknowledge**: Để node nhận ghi vào sau khi kiểm tra lỗi ở CRC, không lỗi = Dominant và có lỗi = Recessive.
 
- - **DEL - ACK Delimiter**: Luôn là Recessive.
+ - **ACK Delimiter**: Luôn là Recessive.
 
  - **EOF - End Of Frame**: 7 bits Recessive, kết thúc thông điệp.
 
@@ -453,11 +453,11 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
  - **CRC - Cyclic Redundancy Check**: Kiểm tra lỗi thông điệp.
 
- - **DEL - CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
+ - **CRC Delimiter**: Luôn là Recessive, dùng để ngăn cách.
 
  - **ACK - Acknowledge**: Để node nhận ghi vào sau khi kiểm tra lỗi ở CRC, không lỗi = Dominant và có lỗi = Recessive.
 
- - **DEL - ACK Delimiter**: Luôn là Recessive.
+ - **ACK Delimiter**: Luôn là Recessive.
 
  - **EOF - End Of Frame**: 7 bits Recessive, kết thúc thông điệp.
 
