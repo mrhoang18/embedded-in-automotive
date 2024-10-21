@@ -464,10 +464,8 @@ Tuy nhiên, đây là chỉ là bước bắt đầu quá trình truyền, và c
 
 Khi một node được chọn để gửi thông điệp, thông điệp đó sẽ được gửi đến tất cả các node khác trên bus. 
 
-Tuy nhiên, không phải tất cả các node đều xử lý thông điệp này. Mỗi node sẽ sử dụng bộ lọc để kiểm tra xem thông điệp có phù hợp với mình hay không.
-
 ### Giao tiếp song công (Full-duplex Communication)
-Mặc dù chỉ sử dụng một bus với hai dây tín hiệu, mạng CAN vẫn cho phép các node vừa gửi vừa nhận dữ liệu đồng thời. Điều này giúp mạng CAN hoạt động hiệu quả và không bị nghẽn khi có nhiều thiết bị cùng giao tiếp.
+Mặc dù chỉ sử dụng một bus với hai dây tín hiệu, mạng CAN vẫn cho phép các node vừa gửi vừa nhận dữ liệu đồng thời.
 
 ### Phát hiện và xử lý lỗi tự động
 
@@ -475,13 +473,7 @@ Nếu một node phát hiện ra lỗi trong quá trình truyền hoặc nhận 
 
 ## 6. Các phiên bản của CAN
 
-Trước khi vào phần CAN Frame phải qua phần này trước vì có sự khác nhau trong Frame của các phiên bản CAN.
-
-Giao thức CAN đã phát triển qua nhiều phiên bản để đáp ứng nhu cầu ngày càng cao trong các ứng đặc biệt là công nghiệp ô tô.
-
 Các phiên bản CAN bao gồm: CAN 2.0A (Standard CAN), CAN 2.0B (Extended CAN), và CAN FD (Flexible Data-rate).
-
-Mỗi phiên bản có những cải tiến để hỗ trợ các yêu cầu khác nhau về độ ưu tiên, dung lượng dữ liệu và tốc độ truyền tải.
 
 ## 7. CAN Frame
 **Phần này quan trọng!**
@@ -575,6 +567,7 @@ Error Frame gồm hai phần:
 
 Được một node gửi đi khi nó đang bận xử lý thông điệp hiện tại và yêu cầu các node khác tạm thời dừng truyền cho nó.
 
+### Mask và Filter
 </p>
 </details>
 
