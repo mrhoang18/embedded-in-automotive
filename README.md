@@ -700,7 +700,7 @@ Có 2 loại phiên bản tính checksum:
  - Classic checksum (LIN 1.x slaves): tính trên Data Field.
  - Enhanced checksum (LIN 2.x slaves): tính trên Data Field, ID Field.
 
-Giả sử có  1 byte ID  và 3 byte data hoặc cả 4 byte data, cách tính như nhau: 0x4A, 0x55, 0x93, 0xE5. _(không tính Start, Stop, Parity)_
+Giả sử có ID  và 3 byte data hoặc cả 4 byte data, cách tính như nhau: 0x4A, 0x55, 0x93, 0xE5. _(không tính Start, Stop, Parity)_
  
  - **B1,tính tổng các byte**: 0x4A + 0x55 + 0x93 + 0xE5 = 0x19E (414 thập phân)
  - **B2, nếu tổng lớn hơn 256 thì trừ đi 255**: 0x19E - 0xFF = 0x19.
