@@ -554,6 +554,7 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
 ### Remote Frame
 
+
 ### Error Frame
 
 Được một node bất kì gửi đi khi phát hiện thông điệp mình vừa nhận không hợp lệ và phải gửi lại.
@@ -567,7 +568,8 @@ Error Frame gồm hai phần:
 
 Được một node gửi đi khi nó đang bận xử lý thông điệp hiện tại và yêu cầu các node khác tạm thời dừng truyền cho nó.
 
-### Mask và Filter
+
+
 </p>
 </details>
 
@@ -575,15 +577,17 @@ Error Frame gồm hai phần:
 <details><summary>Details</summary>
 <p>
 
-Mask và Filter
+### Mask và Filter
 
-Mask dùng để lọc bớt ID nhờ cơ chế cổng OR với hai đầu vào bị đảo bởi cổng NOT.
+Mask và Filter hoạt động dựa trên các cổng logic OR và XOR để so sánh từng bit ID với từng bit trên thanh ghi Mark và Filter.
+
+Mask dùng để lọc bớt ID nhờ cổng OR với hai đầu vào bị đảo bởi cổng NOT.
 
 Filer dùng để lọc lại chính xác ID nhờ cổng XOR.
 
-Nếu Mask bằng 0, thì nó cho mọi ID đi qua mặc kệ Filter.
+Nếu Mask bằng 0, thì nó cho mọi ID đi qua mặc kệ thanh ghi Filter và ID. (Vì Mark đảo bằng 1 thì cổng OR không quan tâm input còn lại).
 
-Nếu Mask bằng 1, thì bắt buộc bit của Filter giống với bit ID mới cho qua.
+Nếu Mask bằng 1, thì bắt buộc bit của Filter giống với bit ID mới cho qua (Vì cổng XOR output bằng 0 chỉ khi bit ID và bit Filter giống nhau).
 
 </p>
 </details>
@@ -692,6 +696,8 @@ Sau khi node master phát xong header, có hai kiểu Response:
 Có 2 loại phiên bản tính checksum:
  - Classic checksum (LIN 1.x slaves): tính trên Data Field.
  - Enhanced checksum (LIN 2.x slaves): tính trên Data Field, ID Field.
+
+Nếu ID là 0x3C (60), 0x3D (61) chỉ dùng classic checksum.
 
 Giả sử có ID  và 3 byte data hoặc cả 4 byte data, cách tính như nhau: 0x4A, 0x55, 0x93, 0xE5. _(không tính Start, Stop, Parity)_
  
