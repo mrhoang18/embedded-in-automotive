@@ -582,6 +582,16 @@ Error Frame gồm hai phần:
 <details><summary>Details</summary>
 <p>
 
+Mask và Filter
+
+Mask dùng để lọc bớt ID nhờ cơ chế cổng OR với hai đầu vào bị đảo bởi cổng NOT.
+
+Filer dùng để lọc lại chính xác ID nhờ cổng XOR.
+
+Nếu Mask bằng 0, thì nó cho mọi ID đi qua mặc kệ Filter.
+
+Nếu Mask bằng 1, thì bắt buộc bit của Filter giống với bit ID mới cho qua.
+
 </p>
 </details>
 
@@ -591,82 +601,110 @@ Error Frame gồm hai phần:
 
 ## 1. Giao thức LIN
 
-LIN sinh ra nhằm giảm sự phức tạp và chi phí trong việc truyền thông giữa các thiết bị điện tử đơn giản trong xe.
+LIN sinh ra nhằm giảm phức tạp và chi phí trong việc truyền thông giữa các thiết bị đơn giản, không cần quá nhanh như điều hòa, đèn. cửa.
+
+CAN và LIN cùng phối hợp trong hệ thống, CAN, LIN giao tiếp với nhau thông qua các Gateway (bộ chuyển đổi giao thức).
 
 <p align="center">
     <img src="image/lin-1.png" alt="alt text" width="600">
 </p>
 
-CAN và LIN cùng phối hợp làm việc trong hệ thống. 
+## 2. Đặc điểm
 
-Để CAN và LIN truyền nhận thông tin được với nhau phải cần đến các Gateway (bộ chuyển đổi giao thức).
+ - Tốc độ truyền thấp: 1 đến 20 kbps phổ biến nhất 19.2 kbps.
 
-CAN được sử dụng cho các hệ thống quan trọng yêu cầu tốc độ cao như: Hệ thống động cơ, phanh, túi khí an toàn,... trong khi LIN được sử dụng cho các hệ thống con ít quan trọng hơn với chi phí thấp như: Điều khiển cửa sổ, đèn, gương, điều hòa,...
+ - Mô hình Master - Slave.
 
-## 2. Các đặc điểm của giao thức LIN
+ - Giao tiếp không đồng bộ dựa trên UART.
 
-### Tốc độ truyền thấp
+ - Master “quét” yêu cầu tới tất cả các Slave để thăm dò thông tin, Slave chỉ phản hồi khi có yêu cầu từ Master, Master có dữ liệu từ Slave sẽ gửi lên bus CAN để đi tới các LIN khác.
+ 
 
-LIN hỗ trợ tốc độ truyền từ 1 đến 20 kbps, nhưng phổ biến nhất là 19.2 kbps. Đây là mức tốc độ hợp lý cho các ứng dụng yêu cầu tốc độ truyền thông vừa phải và không yêu cầu phản hồi ngay lập tức. 
-
-### Mô hình Master - Slave
-
-Giao thức LIN dựa trên mô hình truyền thông Master - Slave. Trong một hệ thống LIN, chỉ có một Node Master và có thể có nhiều Node Slave. 
+## 3. LIN Node
 
 <p align="center">
     <img src="image/lin-3.png" alt="alt text" width="600">
 </p>
 
-
-### Giao tiếp không đồng bộ dựa trên UART
-
-Master có dữ liệu từ Slave sẽ gửi lên bus CAN để đi tới các LIN khác
-LIN sử dụng giao thức UART để truyền/nhận dữ liệu, với khung truyền dữ liệu sẽ là 1 start, 8 data, 1 hoặc 2 stop
-
-## 3. LIN Node
-
-
-
-## 3. LIN Frame
-
-Khung truyền LIN có cấu trúc cố định, bao gồm các phần sau:
-
 <p align="center">
-    <img src="image/lin-4.png" alt="alt text" width="600">
+    <img src="image/lin-6.png" alt="alt text" width="400">
 </p>
 
- - Header (Do Master gửi):
+Một LIN Node gồm: MCU, LIN Controller, LIN Transceiver, ngoài ra còn có Sensor và Actuator.
 
-    <p align="center">
-        <img src="image/lin-5.png" alt="alt text" width="600">
-    </p>
+LIN dựa trên UART, Chân Tx của MCU nối Tx của Transceiver, tương tự Rx (_Không phải nối chéo_).
 
-    + **Sync Break Field**: Độ dài tối thiếu 13 bits, chỉ chứa các bit mức 0, là một tín hiệu đặc biệt bắt đầu của một thông điệp.
+LIN hoạt động ở điện áp 12V, Master có nhiều kênh để quản lý nhiều Slave, mỗi một kênh chỉ có một dây tín hiệu.
 
-    + **Sync Delimiter**: Độ dài 1 bit mức 1, phân cách Sync Break Field với Sync Field.
+## 4. LIN Frame
 
-    <p align="center">
-        <img src="image/lin-6.png" alt="alt text" width="600">
-    </p>
+Khung truyền LIN gồm 2 phần lớn: Header và Response.
 
-    + **Sync Field**: Độ dài 10 bits gồm: 1 bit Start, 8 bits có giá trị cố định là 0x55 (01010101), và 1 bit Stop, được dùng để đồng bộ hóa tốc độ truyền (baud rate) giữa các thiết bị Master và Slave.
+### Header
 
-    <p align="center">
-        <img src="image/lin-7.png" alt="alt text" width="600">
-    </p>
+<p align="center">
+    <img src="image/lin-4.png" alt="alt text" width="800">
+</p>
 
-    + **PID Field - Protected Identifier Field**: Chứa hai field con là: 6 bits ID chứa thông tin định danh của khung tin nhắn, giúp xác định loại tin nhắn và thiết bị nào sẽ phản hồi và 2 bits parity kiểm tra lỗi.
+Do Master gửi.
 
-Sau khi node master phát xong header, có hai kiểu response: 
-1. Yêu cầu node slave gửi dữ liệu (Dữ liệu cảm biến nhiệt độ,...)
-2. Thực hiện theo chỉ thị của node master (Mở cốp,...). 
++ **Sync Break**: >=13 bits 0 + 1 bit Delimeter mức cao, bắt đầu của một thông điệp.
 
-Nhưng cấu trúc của frame của hai kiểu là như nhau.
++ **Sync Field**: 1 bit Start, 8 bits giá trị cố định 0x55, và 1 bit Stop, đồng bộ hóa tốc độ truyền giữa Master và Slave.
 
- - Response:
-    + **Data**: Độ dài từ 16 bits đến 64 bits, có thể là lệnh điều khiển hoặc phản hồi cảm biến.ội dung chính của thông điệp.
++ **PID Field - Protected Identifier Field**: 6 bits ID, Slave sẽ xem ID có khớp với mình không, nếu có thì xử lý, không thì bỏ qua và 2 bits parity kiểm tra lỗi.
 
-    + **Checksum**: Độ dài 8 bits: Phát hiện lỗi trong quá trình truyền.
+ID quy định độ dài:
+
+| ID Range (Dec) | ID Range (Hex) | Data Length |
+|----------------|----------------|-------------|
+| 0-31           | 0x00-0x1F      | 2           |
+| 32-47          | 0x20-0x2F      | 4           |
+| 48-63          | 0x30-0x3F      | 8           |
+
+ID quy định chức năng:
+
+|   ID Range (Dec)   | ID Range (Hex)     | Chức năng                               |
+|--------------------|--------------------|-----------------------------------------|
+| 0-50               | 0x00-0x3B          | Khung dữ liệu hoặc tín hiệu thông thường|
+| 60-61              | 0x3C-0x3D          | Gửi dữ liệu chẩn đoán hoặc cấu hình     |
+| 62-63              | 0x3E-0x3F          | Hiện tại chưa có chức năng cụ thể       |
+
+0-50 (0x00-0x3B): Dành cho các khung dữ liệu hoặc tín hiệu thông thường.
+60 (0x3C) và 61 (0x3D): Dùng để gửi dữ liệu chẩn đoán hoặc cấu hình.
+62 (0x3E) và 63 (0x3F): Dành riêng cho việc mở rộng giao thức trong tương lai.
+
+Cơ chế kiểm tra Parity:
+
+ - P0 = ID0 ⊕ ID1 ⊕ ID2 ⊕ ID4
+
+ - P1 = !(ID1 ⊕ ID3 ⊕ ID4 ⊕ ID5)
+
+### Response
+
+Sau khi node master phát xong header, có hai kiểu Response: 
+
+1. Master yêu cầu dữ liệu từ Slave thì Slave sẽ gửi lại Response cho Master
+
+2. Nếu Master muốn gửi dữ liệu cho Slave thì sẽ gửi kèm Response cho Slave.
+
+<p align="center">
+    <img src="image/lin-5.png" alt="alt text" width="800">
+</p>
+
+- **Data**: 16 bits đến 64 bits, độ dài do ID quyết định.
+
+- **Checksum**: 8 bits, kiểm tra lỗi.
+
+Có 2 loại phiên bản tính checksum:
+ - Classic checksum (LIN 1.x slaves): tính trên Data Field.
+ - Enhanced checksum (LIN 2.x slaves): tính trên Data Field, ID Field.
+
+Giả sử có  1 byte ID  và 3 byte data hoặc cả 4 byte data, cách tính như nhau: 0x4A, 0x55, 0x93, 0xE5. _(không tính Start, Stop, Parity)_
+ 
+ - **B1,tính tổng các byte**: 0x4A + 0x55 + 0x93 + 0xE5 = 0x19E (414 thập phân)
+ - **B2, nếu tổng lớn hơn 256 thì trừ đi 255**: 0x19E - 0xFF = 0x19.
+ - **B3, đảo ngược**: 0x19(0001 1001)-> 0xE6(1110 0110).
 
 ## Tổng quan
 
