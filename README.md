@@ -297,18 +297,26 @@ UART là chuẩn giao tiếp nối tiếp, không đồng bộ, song công, 2 d�
 # LESSON 05: SPI
 <details><summary>Details</summary>
 <p>
+
+## 1. SPI software
+## 2. SPI hardware
 </p>
 </details>
 
 # LESSON 06: I2C
 <details><summary>Details</summary>
 <p>
+
+## 1. I2C software
+## 2. I2C hardware
 </p>
 </details>
 
 # LESSON 07: UART
 <details><summary>Details</summary>
 <p>
+## 1. UART software
+## 2. UART hardware
 </p>
 </details>
 
@@ -711,5 +719,17 @@ Giả sử có ID  và 3 byte data hoặc cả 4 byte data, cách tính như nha
     <img src="image/lin-2.png" alt="alt text" width="700">
 </p>
 
+</p>
+</details>
+
+# LESSON 15: AUTOSAR CLASSIC
+<details><summary>Details</summary>
+<p>
+</p>
+</details>
+
+# LESSON 16: PROGAMMING MCAL LAYER
+<details><summary>Details</summary>
+<p>
 </p>
 </details>
