@@ -733,3 +733,153 @@ Giả sử có ID  và 3 byte data hoặc cả 4 byte data, cách tính như nha
 <p>
 </p>
 </details>
+
+# LESSON 17: QUY TẮC CẤU TRÚC CODE TRONG AUTOSAR CLASSIC
+<details><summary>Details</summary>
+<p>
+
+## 1. Giới thiệu chung
+
+Khi làm việc với AUTOSAR Classic, cần tuân thủ các quy tắc do nên tảng này quy định để đảm bảo tính bảo trì và mở rộng mã nguồn. 
+
+Bài này nhằm hướng dẫn chi tiết về:
+
+ -Cấu trúc file header và file source.
+
+ -Quy tắc khai báo và sử dụng biến.
+
+ -Cách sử dụng từ khóa static và extern.
+
+ -Quy tắc viết comment để đảm bảo mã nguồn rõ ràng, dễ hiểu.
+
+ -Ví dụ cụ thể về tổ chức mã nguồn.
+
+## 2. Cấu trúc và quy tắc đặt tên file
+
+### File header (.h)
+
+File header (.h) là file chứa các khai báo mà các file source khác có thể sử dụng. Nó đóng vai trò là một "giao diện" giữa các phần của chương trình.
+
+-Mỗi file header phải có include guards để ngăn chặn việc file bị include nhiều lần, gây ra lỗi biên dịch.
+
+-Tên file header phải rõ ràng, ngắn gọn và mô tả chính xác chức năng của nó.
+
+**Include Guards**
+
+Sử dụng `#ifndef, #define, #endif`.
+
+```c
+#ifndef MOTOR_CONTROL_H
+#define MOTOR_CONTROL_H
+// Nội dung file header
+#endif // MOTOR_CONTROL_H
+```
+**Phần mô tả (Documentation block)**
+
+Bao gồm: Tên file, mô tả chức năng, tên tác giả, ngày tạo, và phiên bản. 
+
+Phần này giúp những lập trình viên khác hiểu rõ về file này mà không cần đọc chi tiết mã.
+
+```c
+/***************************************************************************
+ * @file    MotorControl.h
+ * @brief   Khai báo các hàm và cấu trúc liên quan đến điều khiển động cơ
+ * @details File này cung cấp giao diện cho việc điều khiển động cơ, bao gồm
+ *          khởi tạo, đặt tốc độ, và dừng động cơ.
+ * @version 1.0
+ * @date    2024-09-11
+ * @author  HALA Academy
+ * @website https://hala.edu.vn/
+ ***************************************************************************/
+```
+
+**Include thư viện chuẩn (nếu cần)**
+
+Chỉ include những thư viện cần thiết, để tránh làm tăng kích thước mã nguồn và gây lỗi không mong muốn.
+
+```c
+#include <stdint.h>  // Sử dụng cho kiểu dữ liệu cố định
+```
+
+**Khai báo kiểu dữ liệu (typedef, enum, struct)**
+
+File header là nơi khai báo các kiểu dữ liệu như `struct, enum, typedef` để các file source khác có thể sử dụng.
+
+```c
+typedef enum
+{
+    MOTOR_OFF = 0,
+    MOTOR_ON  = 1
+} MotorState_t;
+
+typedef struct
+{
+    uint8_t motorId;          // ID của động cơ
+    uint16_t motorSpeed;      // Tốc độ hiện tại của động cơ
+    MotorState_t motorState;  // Trạng thái hiện tại của động cơ (ON hoặc OFF)
+} Motor_t;
+```
+
+**Khai báo các hàm và biến**
+
+Các hàm và biến toàn cục được khai báo trong file header nhưng không định nghĩa chi tiết.
+
+```c
+extern Motor_t motorList[10];  // Biến toàn cục dùng ở nhiều file
+
+void Motor_Init(uint8_t motorId);  // Khai báo hàm khởi tạo
+int Motor_SetSpeed(uint8_t motorId, uint8_t speed);  // Khai báo hàm đặt tốc độ
+```
+
+### File source (.c)
+
+File source (.c) chứa phần định nghĩa chi tiết của các hàm được khai báo trong file header.
+
+**Include file header và các thư viện cần thiết**
+
+File source luôn phải include các file header liên quan để sử dụng các khai báo và kiểu dữ liệu.
+
+```c
+#include "MotorControl.h"
+#include <stdio.h>  
+```
+
+**Phần mô tả (Documentation block)**
+
+2.	Phần mô tả (documentation block):
+
+Phần mô tả của file source giúp ghi chú chức năng của file, bao gồm thông tin tác giả, ngày tạo, và các phiên bản.
+
+```c
+/***************************************************************************
+ * @file    MotorControl.c
+ * @brief   Định nghĩa các hàm điều khiển động cơ.
+ * @details File này chứa phần định nghĩa của các hàm điều khiển động cơ, bao gồm
+ *          khởi tạo, đặt tốc độ, và dừng động cơ.
+ * @version 1.0
+ * @date    2024-09-11
+ * @author  HALA Academy
+ * @website https://hala.edu.vn/
+ ***************************************************************************/
+```
+
+**Định nghĩa các hàm**
+
+Trong file source, các hàm được định nghĩa chi tiết. Phần logic của hàm phải được viết rõ ràng, với comment giải thích chi tiết.
+
+```c
+void Motor_Init(uint8_t motorId) 
+{
+    motorList[motorId].motorId = motorId;
+    motorList[motorId].motorSpeed = 0U;
+    motorList[motorId].motorState = MOTOR_OFF;
+}
+```
+
+
+Quy tắc đặt tên file
+
+</p>
+</details>
+
+
