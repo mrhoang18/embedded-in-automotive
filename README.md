@@ -294,11 +294,239 @@ UART là chuẩn giao tiếp nối tiếp, không đồng bộ, song công, 2 d�
 
 
 
-# LESSON 05: SPI
+# LESSON 05: SPI SOFTWARE & SPI HARDWARE
 <details><summary>Details</summary>
 <p>
 
-## 1. SPI software
+## 1. SPI Software
+
+SPI Software là tự tự lập trình cách thức giao tiếp bằng cách điều khiển các chân GPIO để tạo ra các tín hiệu SPI, và có thể sử dụng thêm Timer để quản lý nhịp.
+
+Kém linh hoạt và chậm hơn so với SPI Hardware, ít sử dụng.
+
+_Code SPI Software cho master và slave để ở trong folder lesson-05._
+
+### Xác định và cấu hình chân GPIO
+
+Chọn chân GPIO làm 4 chân SCK, MISO, MOSI, CS.
+
+```c
+#define SPI_SCK_Pin  GPIO_Pin_0
+#define SPI_MISO_Pin GPIO_Pin_1
+#define SPI_MOSI_Pin GPIO_Pin_2
+#define SPI_CS_Pin   GPIO_Pin_3
+#define SPI_GPIO     GPIOA
+#define SPI_RCC      RCC_APB2Periph_GPIOA
+
+void RCC_Config()
+{
+    // Enable clock for GPIO, Timer 2
+    RCC_APB2PeriphClockCmd(SPI_RCC, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+}
+```
+
+Cấu hình chân cho:
+
+- Master: SPI_SCK_Pin, SPI_MOSI_Pin, SPI_CS_Pin là **output push-pull**, SPI_MISO_Pin là **input floating**.
+
+- Slave: SPI_SCK_Pin, SPI_MOSI_Pin, SPI_CS_Pin là **input floating**, SPI_MISO_Pin là **output push-pull**.
+
+```c
+void GPIO_Config()
+{
+    // Configure for MASTER
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    // Configure SCK, MOSI, and CS as output push-pull
+    GPIO_InitStructure.GPIO_Pin = SPI_SCK_Pin | SPI_MOSI_Pin | SPI_CS_Pin;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+
+    // Configure MISO as input floating
+    GPIO_InitStructure.GPIO_Pin = SPI_MISO_Pin;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+
+    
+    /*// Configure for SLAVE
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    // Configure SCK, MOSI, and CS as input floating
+    GPIO_InitStructure.GPIO_Pin = SPI_SCK_Pin | SPI_MOSI_Pin | SPI_CS_Pin;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+
+    // Configure MISO as output push-pull
+    GPIO_InitStructure.GPIO_Pin = SPI_MISO_Pin;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+    */
+}
+```
+
+### Tạo clock 
+
+```c
+void Clock(){
+    GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_SET);
+    delay_ms(4);
+    GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
+    delay_ms(4);
+}
+```
+### Set trạng thái ban đầu
+
+```c
+void SPI_Config()
+{
+    GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
+    GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);
+    GPIO_WriteBit(SPI_GPIO, SPI_MISO_Pin, Bit_RESET);
+    GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
+}
+```
+
+
+### Hàm truyền
+
+Hàm truyền sẽ truyền lần lượt 8 bit trong byte dữ liệu:
+
+ -Kéo CS xuống 0.
+
+ -Truyền 1 bit.
+
+ -Dịch 1 bit.
+
+ -Gửi clock();
+
+ -Kéo CS lên 1;
+
+```c
+void SPI_Master_Transmit(uint8_t u8Data)
+{                          // 0b10010000
+    uint8_t u8Mask = 0x80; // 0b10000000
+    uint8_t tempData;
+	
+    GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_RESET);
+    Delay_Ms(1);
+	
+    for (int i = 0; i < 8; i++)
+    {
+        tempData = u8Data & u8Mask;
+        if (tempData)
+        {
+            GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_SET);
+            Delay_Ms(1);
+        }
+        else
+        {
+            GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
+            Delay_Ms(1);
+        }
+        u8Data = u8Data << 1;
+        Clock();
+    }
+    GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);
+    Delay_Ms(1);
+}
+```
+
+### Hàm nhận
+
+Hàm truyền sẽ truyền lần lượt 8 bit trong byte dữ liệu:
+
+ -Kiểm tra CS ==0?.
+
+ -Kiểm tra Clock==1?
+
+ -Đọc data trên MOSI, ghi vào biến.
+
+ -Dịch 1 bit.
+
+ -Kiểm tra CS==1?
+
+```c
+uint8_t SPI_Slave_Receive(void)
+{
+    uint8_t dataReceive = 0x00; // 0b11000000
+    uint8_t temp = 0x00, i = 0;
+
+    while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin));
+
+    while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));
+
+    for (i = 0; i < 8; i++)
+    {
+        if (GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin))
+        {
+            while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin))
+			{
+                temp = GPIO_ReadInputDataBit(SPI_GPIO, SPI_MOSI_Pin);
+			}
+            dataReceive = dataReceive << 1;
+            dataReceive = dataReceive | temp;
+        }
+        while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));
+    }
+    return dataReceive;
+}
+```
+
+### Truyền và nhận dữ liệu trong main
+
+**Master truyền:**
+
+```c
+uint8_t DataTrans[] = {0,1,2,3,4,5,6,7,8,9};
+
+int main()
+{
+    RCC_Config();
+    GPIO_Config();
+    TIM_Config();
+    SPI_Config();
+
+    while (1)
+    {
+		// Send 0 to 9
+		for (uint8_t i = 0; i < 10; i++) 
+		{
+			SPI_Master_Transmit(DataTrans[i]); 
+			Delay_Ms(500);           
+		}
+    }
+}
+```
+**Slave nhận:**
+
+```c
+uint8_t Data;
+
+int main()
+{
+    RCC_Config();
+    GPIO_Config();
+    TIM_Config();
+    SPI_Config();
+
+    while (1)
+    {
+        if (!(GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin)))
+        {
+            for (int i = 0; i < 10; i++)
+            {
+				Data = SPI_Slave_Receive();
+            }
+        }
+    }
+}
+```
+
 ## 2. SPI hardware
 </p>
 </details>
@@ -879,6 +1107,192 @@ void Motor_Init(uint8_t motorId)
 
 Quy tắc đặt tên file
 
+## 6. Cấu trúc và quy tắc đặt tên file
+
+### File header (MotorControl.h)
+
+```c
+/***************************************************************************
+ * @file    MotorControl.h
+ * @brief   Khai báo các hàm và cấu trúc liên quan đến điều khiển động cơ
+ * @details File này cung cấp giao diện cho việc điều khiển động cơ, bao gồm
+ *          khởi tạo, đặt tốc độ, dừng động cơ và lấy trạng thái của động cơ.
+ * @version 1.0
+ * @date    2024-09-11
+ * @author  HALA Academy
+ * @website https://hala.edu.vn/
+ ***************************************************************************/
+
+#ifndef MOTOR_CONTROL_H
+#define MOTOR_CONTROL_H
+
+#include <stdint.h> // Thư viện chuẩn cho kiểu dữ liệu cố định
+
+/**************************************************************************
+ * Định nghĩa hằng số cho giới hạn tốc độ của động cơ
+ * MAX_MOTOR_SPEED: Tốc độ tối đa (100%)
+ * MIN_MOTOR_SPEED: Tốc độ tối thiểu (0%)
+ **************************************************************************/
+#define MAX_MOTOR_SPEED 100U // Tốc độ động cơ tối đa
+#define MIN_MOTOR_SPEED 0U   // Tốc độ động cơ tối thiểu
+
+/**************************************************************************
+ * Định nghĩa kiểu dữ liệu enum cho trạng thái động cơ
+ * MOTOR_OFF: Động cơ tắt
+ * MOTOR_ON: Động cơ bật
+ **************************************************************************/
+typedef enum
+{
+    MOTOR_OFF = 0, // Động cơ tắt
+    MOTOR_ON = 1   // Động cơ bật
+} MotorState_t;
+
+/**************************************************************************
+ * Định nghĩa cấu trúc Motor_t chứa thông tin về động cơ
+ * motorId: ID của động cơ
+ * motorSpeed: Tốc độ hiện tại của động cơ
+ * motorState: Trạng thái hiện tại của động cơ (ON hoặc OFF)
+ **************************************************************************/
+typedef struct
+{
+    uint8_t motorId;         // ID của động cơ
+    uint16_t motorSpeed;     // Tốc độ hiện tại của động cơ
+    MotorState_t motorState; // Trạng thái hiện tại của động cơ
+} Motor_t;
+
+/**************************************************************************
+ * Khai báo biến toàn cục motorList
+ * Biến này được sử dụng để lưu thông tin của tất cả các động cơ
+ * Mỗi hệ thống có thể quản lý tối đa 10 động cơ
+ **************************************************************************/
+extern Motor_t motorList[10]; // Biến lưu danh sách động cơ
+
+/**************************************************************************
+ * @brief   Khởi tạo hệ thống động cơ
+ * @param   motorId   ID của động cơ cần khởi tạo
+ * @return  void
+ **************************************************************************/
+void Motor_Init(uint8_t motorId);
+
+/**************************************************************************
+ * @brief   Đặt tốc độ cho động cơ
+ * @param   motorId   ID của động cơ cần đặt tốc độ
+ * @param   speed     Tốc độ cần đặt (từ 0% đến 100%)
+ * @return  int       Trả về 0 nếu thành công, -1 nếu tốc độ không hợp lệ
+ **************************************************************************/
+int Motor_SetSpeed(uint8_t motorId, uint8_t speed);
+
+/**************************************************************************
+ * @brief   Dừng động cơ
+ * @param   motorId   ID của động cơ cần dừng
+ * @return  void
+ **************************************************************************/
+void Motor_Stop(uint8_t motorId);
+
+/**************************************************************************
+ * @brief   Lấy trạng thái hiện tại của động cơ
+ * @param   motorId   ID của động cơ cần kiểm tra trạng thái
+ * @return  MotorState_t  Trả về trạng thái hiện tại của động cơ
+ *                        MOTOR_ON hoặc MOTOR_OFF
+ **************************************************************************/
+MotorState_t Motor_GetState(uint8_t motorId);
+
+#endif // MOTOR_CONTROL_H
+```
+
+### File source (MotorControl.c)
+
+```c
+/***************************************************************************
+ * @file    MotorControl.c
+ * @brief   Định nghĩa các hàm điều khiển động cơ
+ * @details File này chứa phần định nghĩa của các hàm điều khiển động cơ, bao gồm
+ *          khởi tạo, đặt tốc độ, dừng động cơ, và lấy trạng thái động cơ.
+ * @version 1.0
+ * @date    2024-09-11
+ * @author  HALA Academy
+ * @website https://hala.edu.vn/
+ ***************************************************************************/
+
+#include "MotorControl.h" // File header chứa các khai báo liên quan
+#include <stdio.h>        // Thư viện chuẩn để sử dụng hàm printf
+
+/**************************************************************************
+ * Định nghĩa biến motorList là danh sách các động cơ trong hệ thống
+ * Hệ thống hỗ trợ tối đa 10 động cơ, với mỗi động cơ lưu trong motorList
+ **************************************************************************/
+Motor_t motorList[10]; // Biến toàn cục lưu thông tin về các động cơ
+
+/**************************************************************************
+ * Biến static motorRunTime lưu thời gian hoạt động của từng động cơ
+ * Biến này chỉ được sử dụng trong phạm vi file source này (local scope)
+ **************************************************************************/
+static uint16_t motorRunTime[10]; // Thời gian hoạt động của mỗi động cơ
+
+/**************************************************************************
+ * @brief   Khởi tạo động cơ
+ * @details Hàm này đặt trạng thái động cơ về OFF và tốc độ ban đầu là 0.
+ *          Biến motorRunTime được đặt về 0 cho mỗi động cơ.
+ * @param   motorId   ID của động cơ cần khởi tạo
+ * @return  void
+ **************************************************************************/
+void Motor_Init(uint8_t motorId)
+{
+    motorList[motorId].motorId = motorId;       // Gán ID cho động cơ
+    motorList[motorId].motorSpeed = 0U;         // Đặt tốc độ ban đầu là 0
+    motorList[motorId].motorState = MOTOR_OFF;  // Đặt trạng thái là OFF
+    motorRunTime[motorId] = 0U;                 // Thời gian chạy về 0
+    printf("Motor %d initialized.\n", motorId); // In ra thông báo khởi tạo
+}
+
+/**************************************************************************
+ * @brief   Đặt tốc độ cho động cơ
+ * @details Hàm này kiểm tra xem tốc độ truyền vào có hợp lệ không (trong khoảng 0-100%).
+ *          Nếu hợp lệ, tốc độ của động cơ được cập nhật và thời gian hoạt động được tăng lên.
+ * @param   motorId   ID của động cơ cần đặt tốc độ
+ * @param   speed     Tốc độ cần đặt (từ 0% đến 100%)
+ * @return  int       Trả về 0 nếu thành công, -1 nếu tốc độ không hợp lệ
+ **************************************************************************/
+int Motor_SetSpeed(uint8_t motorId, uint8_t speed)
+{
+    // Kiểm tra xem tốc độ có nằm trong khoảng hợp lệ không
+    if (speed > MAX_MOTOR_SPEED || speed < MIN_MOTOR_SPEED)
+    {
+        printf("Error: Speed out of range.\n"); // In ra lỗi nếu không hợp lệ
+        return -1;                              // Trả về -1 nếu không hợp lệ
+    }
+
+    motorList[motorId].motorSpeed = speed;                   // Cập nhật tốc độ động cơ
+    motorList[motorId].motorState = MOTOR_ON;                // Đặt trạng thái động cơ là ON
+    motorRunTime[motorId] += 1;                              // Tăng thời gian hoạt động của động cơ
+    printf("Motor %d speed set to %d%%.\n", motorId, speed); // In ra tốc độ mới
+    return 0;                                                // Trả về 0 nếu thành công
+}
+
+/**************************************************************************
+ * @brief   Dừng động cơ
+ * @details Hàm này dừng động cơ bằng cách đặt tốc độ về 0 và trạng thái về OFF.
+ * @param   motorId   ID của động cơ cần dừng
+ * @return  void
+ **************************************************************************/
+void Motor_Stop(uint8_t motorId)
+{
+    motorList[motorId].motorSpeed = 0U;        // Đặt tốc độ về 0
+    motorList[motorId].motorState = MOTOR_OFF; // Đặt trạng thái về OFF
+    printf("Motor %d stopped.\n", motorId);    // In ra thông báo dừng động cơ
+}
+
+/**************************************************************************
+ * @brief   Lấy trạng thái hiện tại của động cơ
+ * @details Hàm này trả về trạng thái hiện tại của động cơ (MOTOR_ON hoặc MOTOR_OFF).
+ * @param   motorId   ID của động cơ cần kiểm tra
+ * @return  MotorState_t  Trả về trạng thái của động cơ (ON hoặc OFF)
+ **************************************************************************/
+MotorState_t Motor_GetState(uint8_t motorId)
+{
+    return motorList[motorId].motorState; // Trả về trạng thái hiện tại của động cơ
+}
+```
 </p>
 </details>
 
