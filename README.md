@@ -520,7 +520,7 @@ int main()
         {
             for (int i = 0; i < 10; i++)
             {
-				Data = SPI_Slave_Receive();
+                Data = SPI_Slave_Receive();
             }
         }
     }
