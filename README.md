@@ -493,12 +493,12 @@ int main()
 
     while (1)
     {
-		// Send 0 to 9
-		for (uint8_t i = 0; i < 10; i++) 
-		{
-			SPI_Master_Transmit(DataTrans[i]); 
-			Delay_Ms(500);           
-		}
+        // Send 0 to 9
+        for (uint8_t i = 0; i < 10; i++) 
+        {
+            SPI_Master_Transmit(DataTrans[i]); 
+            Delay_Ms(500);           
+        }
     }
 }
 ```
