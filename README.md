@@ -528,6 +528,11 @@ int main()
 ```
 
 ## 2. SPI hardware
+
+
+
+
+
 </p>
 </details>
 
