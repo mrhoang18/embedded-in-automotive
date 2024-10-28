@@ -308,6 +308,10 @@ _Code SPI Software cho master và slave để ở trong folder lesson-05._
 
 ### Xác định và cấu hình chân GPIO
 
+<p align="center">
+    <img src="image/spis-1.png" alt="alt text" width="200">
+</p>
+
 Chọn chân GPIO làm 4 chân SCK, MISO, MOSI, CS.
 
 ```c
@@ -371,6 +375,12 @@ void GPIO_Config()
 
 ### Tạo clock 
 
+<p align="center">
+    <img src="image/spis-2.png" alt="alt text" width="200">
+</p>
+
+Tín hiệu clock được tạo bằng cách kết hợp kéo chân SCK lên 1, xuống 0 và delay. Delay được tạo bằng timer.
+
 ```c
 void Clock(){
     GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_SET);
@@ -380,6 +390,12 @@ void Clock(){
 }
 ```
 ### Set trạng thái ban đầu
+
+<p align="center">
+    <img src="image/spis-3.png" alt="alt text" width="400">
+</p>
+
+Trạng thái ban đầu: SCK ở mức thấp (tùy mode), CS ở mức cao, MISO và MOSI ở mức nào cũng được.
 
 ```c
 void SPI_Config()
@@ -527,20 +543,95 @@ int main()
 }
 ```
 
-## 2. SPI hardware
+## 2. SPI Hardware
+
+SPI Hardware là sử dụng trực tiếp module được tích hợp trên vi điều khiển.
+
+### Xác định và cấu hình chân GPIO
+
+<p align="center">
+    <img src="image/spih-1.png" alt="alt text" width="200">
+</p>
+
+<p align="center">
+    <img src="image/spih-2.png" alt="alt text" width="300">
+</p>
+
+Vì chân của các bộ SPI trên VĐK là cố định nên phải cấu hình đúng.
+
+```c
+// Use SPI1
+#define SPI1_NSS 	GPIO_Pin_4
+#define SPI1_SCK	GPIO_Pin_5
+#define SPI1_MISO 	GPIO_Pin_6
+#define SPI1_MOSI 	GPIO_Pin_7
+#define SPI1_GPIO 	GPIOA
+
+void RCC_Config()
+{
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); 
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+}
+
+void GPIO_Config()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	GPIO_InitStructure.GPIO_Pin = SPI1_NSS | SPI1_SCK | SPI1_MISO | SPI1_MOSI;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(SPI1_GPIO, &GPIO_InitStructure);
+}
+```
+
+### Cấu hình SPI
+
+Tương tự các ngoại vi khác, các tham số SPI được cấu hình trong `Struct SPI_InitTypeDef`:
+
+ -`SPI_Mode`: Quy định chế độ hoạt động của thiết bị SPI. 
+
+ -`SPI_Direction`: Quy định kiểu truyền của thiết bị.
+
+ -`SPI_BaudRatePrescaler`: Hệ số chia clock cấp cho Module SPI.
+
+ -`SPI_CPOL`: Cấu hình cực tính của SCK . Có 2 chế độ:
+
+  + `SPI_CPOL_Low`: Cực tính mức 0 khi SCK không truyền xung.
+
+  + `SPI_CPOL_High`: Cực tính mức 1 khi SCK không truyền xung.
+
+  + `SPI_CPHA`: Cấu hình chế độ hoạt động của SCK. Có 2 chế độ:
+
+  + `SPI_CPHA_1Edge`: Tín hiệu truyền đi ở cạnh xung đầu tiên.
+
+  + `SPI_CPHA_2Edge`: Tín hiệu truyền đi ở cạnh xung thứ hai.
+
+ -`SPI_DataSize`: Cấu hình số bit truyền. 8 hoặc 16 bit.
+
+ -`SPI_FirstBit`: Cấu hình chiều truyền của các bit là MSB hay LSB.
+
+ -`SPI_CRCPolynomial`: Cấu hình số bit CheckSum cho SPI.
+
+ -`SPI_NSS`: Cấu hình chân SS là điều khiển bằng thiết bị hay phần mềm.
 
 
+```c
 
-
+```
 
 </p>
 </details>
 
-# LESSON 06: I2C
+# LESSON 06: I2C SOFTWARE & I2C HARDWARE
 <details><summary>Details</summary>
 <p>
 
 ## 1. I2C software
+
+
+
+
 ## 2. I2C hardware
 </p>
 </details>
