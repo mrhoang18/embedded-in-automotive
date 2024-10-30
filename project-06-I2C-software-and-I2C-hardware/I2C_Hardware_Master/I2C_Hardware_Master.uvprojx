@@ -173,12 +173,12 @@
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
-            <Capability>0</Capability>
-            <DriverSelection>-1</DriverSelection>
+            <Capability>1</Capability>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -373,7 +373,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>.\DS3231_AT24C32;.\Delay</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -420,6 +420,36 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DS3231_AT24C32</GroupName>
+          <Files>
+            <File>
+              <FileName>DS3231_AT24C32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DS3231_AT24C32\DS3231_AT24C32.c</FilePath>
+            </File>
+            <File>
+              <FileName>DS3231_AT24C32.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\DS3231_AT24C32\DS3231_AT24C32.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Delay</GroupName>
+          <Files>
+            <File>
+              <FileName>Delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Delay\Delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>Delay.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Delay\Delay.h</FilePath>
             </File>
           </Files>
         </Group>
