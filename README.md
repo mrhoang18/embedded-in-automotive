@@ -1446,8 +1446,9 @@ Có bộ DMA giúp tăng tốc độ xử lí.
 Các bộ ADC được cấp xung từ RCC APB2, để bộ ADC hoạt động cần cấp xung cho cả ADC để tạo tần số lấy mẫu tín hiệu và cấp xung cho GPIO của Port ngõ vào.
 
 ```c
-void RCC_Config(){
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA| RCC_APB2Periph_ADC1|RCC_APB2Periph_AFIO, ENABLE);
+void RCC_Config()
+{
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_ADC1 | RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 }
 ```
@@ -1459,22 +1460,24 @@ Phương pháp trung bình không thể giảm thiểu nhiễu, thay vào đó s
 
 ```c
 // Global variables for Kalman Filter
-float _err_measure = 1;    // Measurement error (initial value)
-float _err_estimate = 1;   // Estimation error (initial value)
-float _q = 0.01;           // Process noise
+float _err_measure = 1;  // Measurement error (initial value)
+float _err_estimate = 1; // Estimation error (initial value)
+float _q = 0.01;         // Process noise
 float _kalman_gain = 0;
-float _current_estimate = 0;   // Current estimated value
-float _last_estimate = 0;      // Previous estimated value
+float _current_estimate = 0; // Current estimated value
+float _last_estimate = 0;    // Previous estimated value
 
 // Kalman Filter initialization function
-void SimpleKalmanFilter(float mea_e, float est_e, float q){
+void SimpleKalmanFilter(float mea_e, float est_e, float q)
+{
     _err_measure = mea_e;
     _err_estimate = est_e;
     _q = q;
 }
 
 // Kalman Filter update function
-float updateEstimate(float mea){
+float updateEstimate(float mea)
+{
     _kalman_gain = _err_estimate / (_err_estimate + _err_measure);
     _current_estimate = _last_estimate + _kalman_gain * (mea - _last_estimate);
     _err_estimate = (1.0 - _kalman_gain) * _err_estimate + fabs(_last_estimate - _current_estimate) * _q;
