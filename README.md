@@ -1646,7 +1646,7 @@ DMA có 2 chế độ hoạt động là normal và circular:
 </p>
 </details>
 
-# LESSON 11: BOOTLOADER
+# LESSON 11: FLASH - BOOTLOADER
 <details><summary>Details</summary>
 <p>
 
@@ -1782,8 +1782,50 @@ void Flash_WriteNumByte(uint32_t address, uint8_t *data, int num)
 
 ## 2. Bootloader
 
+Đặt vấn đề: Khi cần update hệ thống, không thể yêu cầu người dùng mang thiết bị đến hãng để nạp lại chương trình.
 
 
+=> Dùng phương pháp nạp phần mềm từ xa qua esp có Wifi, Bluetooth.
+
+<p align="center">
+    <img src="image/boot-6.png" alt="alt text" width="400">
+</p>
+
+Ví dụ chương trình cần update là Blinkled (esp gửi thông qua Uart).
+
+=>Cần 1 chương trình tại 0x08000000 để stm32 có thể nhận BlinkLed từ esp, lưu nó ở 0x08008000 và tự động nhảy đến đc đó và thực thi BlinkLed.
+
+Thì chương trình làm nhiệm vụ đó gọi là Bootloader.
+
+<p align="center">
+    <img src="image/boot-7.png" alt="alt text" width="400">
+</p>
+
+Bootloader là chương trình chạy đầu tiên khi khởi động, thường gồm 2 loại:
+
+ - Bootloader do nhà sản xuất cung cấp.
+ - Bootloader do người dùng tự viết.
+
+### Quá trình reset
+
+<p align="center">
+    <img src="image/boot-7.png" alt="alt text" width="400">
+</p>
+
+
+
+Bootloader là chương trình chạy đầu tiên khi khởi động, thường gồm 2 loại:
+
+ - Bootloader do nhà sản xuất cung cấp.
+ - Bootloader do người dùng tự viết.
+
+Ví dụ như trong flash của stm32f1:
+ - 0x00000000 -> 0x08000000: Bootloader do nhà sản xuất để thiết lập hễ thống, hỗ trợ các IDE nạp code.
+ - 
+
+ 
+ 
+ 
 </p>
 </details>
 
