@@ -1,5 +1,5 @@
 Dependencies for Project 'SPI_Hardware_Slave', Target 'Target 1': (DO NOT MODIFY !)
-F (.\main.c)(0x6725C5F3)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections-I D:\SPI\SPI_Hardware_Slave\RTE-I D:\SPI\SPI_Hardware_Slave\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\main.c)(0x6725C902)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections-I D:\SPI\SPI_Hardware_Slave\RTE-I D:\SPI\SPI_Hardware_Slave\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h)(0x61AD876E)
 I (D:\SPI\SPI_Hardware_Slave\RTE\RTE_Components.h)(0x671E60B9)
 I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cm3.h)(0x5625C51C)
