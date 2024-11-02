@@ -570,7 +570,7 @@ Vì chân của các bộ SPI trên VĐK là cố định nên phải cấu hìn
 void RCC_Config()
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 }
 
