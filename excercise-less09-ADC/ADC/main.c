@@ -84,7 +84,7 @@ int main()
         {
             adc_raw = ADC_GetConversionValue(ADC1);
             delay_us(100);
-            sum+=val;
+            sum+=adc_raw;
         }
         sum = sum/10;
         Delay_Ms(100);
