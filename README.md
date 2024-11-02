@@ -1649,6 +1649,141 @@ DMA có 2 chế độ hoạt động là normal và circular:
 # LESSON 11: BOOTLOADER
 <details><summary>Details</summary>
 <p>
+
+## 1. Bộ nhớ, flash và thao tác với flash trên stmf103c8t6
+
+Ví dụ ta có một led RGB, làm sao để giữ được giá trị của R, G, B của led khi tắt nguồn và bật lại?
+=>>Lưu trữ giá trị vào bộ nhớ.
+
+Có 3 loại bộ nhớ trong một VĐK:
+
+<p align="center">
+    <img src="image/boot-1.png" alt="alt text" width="500">
+</p>
+
+### Flash trong STM32F103c8t6
+
+STM32F1 không có EPROM mà chỉ được cung cấp sẵn 128/64Kb Flash.
+
+Flash được chia nhỏ thành các Page, mỗi Page có kích thước 1Kb.
+
+Flash có giới hạn về số lần xóa/ghi.
+
+Trước khi ghi phải xóa Flash trước.
+
+Thường được dùng để lưu chương trình.
+
+<p align="center">
+    <img src="image/boot-2.png" alt="alt text" width="500">
+</p>
+
+### Xóa và ghi flash
+
+Thông thường chương trình sẽ được nạp vào vùng nhớ bắt đầu ở 0x08000000, vùng nhớ phía sau sẽ là trống và người dùng có thể lưu trữ dữ liệu ở vùng này.
+
+Thư viện Std cung cấp các hàm để giao tiếp với Flash trong Module Flash. File "stm32f10x_flash.h".
+
+<p align="center">
+    <img src="image/boot-3.png" alt="alt text" width="200">
+</p>
+
+Mỗi lần ghi 2bytes hoặc 4bytes, tuy nhiên mỗi lần xóa phải xóa cả Page.
+
+**Xóa FLash**
+
+Sơ đồ xóa flash như hình:
+
+<p align="center">
+    <img src="image/boot-4.png" alt="alt text" width="500">
+</p>
+
+ - Đầu tiên, kiểm tra cờ LOCK của Flash, nếu Cờ này đang được bật, Flash đang ở chế độ Lock và cần phải được Unlock trước khi sử dụng.
+ - Sau khi FLash đã Unlock, cờ CR_PER được set lên 1.
+ - Địa chỉ của Page cần xóa được ghi vào FAR.
+ - Set bit CR_STRT lên 1 để bắt đầu quá trình xóa.
+ - Kiểm tra cờ BSY đợi haonf tất quá trình xóa.
+
+Vì flash có cơ chế khóa và mở khóa mỗi lần xóa hoặc ghi nên thư viện cung cấp các hàm LOCK, UNLOCK Flash:
+
+ - `void FLASH_Unlock(void)`: Hàm này Unlock cho tất cả vùng nhớ trong Flash.
+ - `void FLASH_UnlockBank1(void)`: Hàm này chỉ Unlock cho Bank đầu tiên. Vì SMT32F103C8T6 chỉ có 1 Bank duy nhất nên chức năng tương tự hàm trên.
+ - `void FLASH_UnlockBank2(void)`: Unlock cho Bank thứ 2.
+ - `void FLASH_Lock(void)`: Lock bộ điều khiển xóa Flash cho toàn bộ vùng nhớ Flash.
+ - `void FLASH_LockBank1(void)` và `void FLASH_LockBank2(void)`: Lock bộ điều khiển xóa Flash cho Bank 1 hoặc 2.
+
+Các hàm xóa Flash:
+ - `FLASH_Status FLASH_EraseAllBank1Pages(void)`: Xóa tất cả các Page trong Bank 1 của Flash. 
+ - `FLASH_Status FLASH_EraseAllBank2Pages(void)`: Xóa tất cả các Page trong Bank 2 của Flash. 
+ - `FLASH_Status FLASH_EraseAllPages(void)`: Xóa toàn bộ Flash.
+ - `FLASH_Status FLASH_ErasePage(uint32_t Page_Address)`: Xóa 1 page cụ thể trong Flash, cụ thể là Page bắt đầu bằng địa chỉ Page_Address.
+
+**Ghi FLash**
+
+Flash có thể ghi theo 2/4bytes:
+
+Sơ đồ ghi FLash như hình:
+
+<p align="center">
+    <img src="image/boot-5.png" alt="alt text" width="400">
+</p>
+
+ - Tương tự quá trình xóa, đầu tiên Cờ LOCK được kiểm tra.
+
+ - Sau khi xác nhận đã Unlock, CỜ CR_PG được set lên 1.
+
+ - Quá trình ghi dữ liệu vào địa chỉ tương ứng sẽ được thực thi.
+
+ - Kiểm tra cờ BSY để đợi quá trình ghi hoàn tất.
+
+
+Các hàm ghi Flash:
+
+ - `FLASH_Status FLASH_ProgramHalfWord(uint32_t Address, uint16_t Data)`:  Ghi dữ liệu vào vùng nhớ Address với kích thước mỗi 2 byte (Halfword).
+ - `FLASH_Status FLASH_ProgramWord(uint32_t Address, uint32_t Data)`: Ghi dữ liệu vào vùng nhớ Address với kích thước mỗi 4 byte (Word).
+
+ - `FlagStatus FLASH_GetFlagStatus(uint32_t FLASH_FLAG)`: hàm này trả về trạng thái của Flag. Ở bài này ta sẽ dùng hàm này để kiểm tra cờ FLASH_FLAG_BSY. Cờ này báo hiệu rằng Flash đang bận (Xóa/Ghi) nếu được set lên 1. 
+
+**Code ghi data vào 1 Page trong Flash**:
+
+```c
+void Flash_WriteInt(uint32_t address, uint16_t value)
+{
+    FLASH_Unlock();
+    while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+    FLASH_ProgramHalfWord(address, value);
+    while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+    FLASH_Lock();
+}
+
+void Flash_Erase(uint32_t addresspage){
+    FLASH_Unlock();
+    while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+    FLASH_ErasePage(addresspage);
+    while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+    FLASH_Lock();
+}
+
+
+void Flash_WriteNumByte(uint32_t address, uint8_t *data, int num)
+{
+        
+    FLASH_Unlock();
+    while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+    uint16_t *ptr = (uint16_t*)data;
+    for(int i=0; i<((num+1)/2); i++)
+    {
+        FLASH_ProgramHalfWord(address+2*i, *ptr);
+        while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+        ptr++;
+    }
+    FLASH_Lock();
+}
+```
+
+## 2. Bootloader
+
+
+
 </p>
 </details>
 
