@@ -29,20 +29,14 @@ typedef enum
 void Delay_Us(uint32_t Delay)
 {
     TIM_SetCounter(TIM2, 0);
-    while (TIM_GetCounter(TIM2) < Delay)
-        ;
-}
-
-// Configure clocks for GPIOB and TIM2
-void RCC_Config()
-{
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    while (TIM_GetCounter(TIM2) < Delay);
 }
 
 // Configure TIM2 to use as a microsecond delay timer
 void TIM2_Config()
 {
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 
     TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1; // Prescale to 1 MHz (1 µs period)
@@ -57,6 +51,8 @@ void TIM2_Config()
 // Configure GPIO for I2C SDA and SCL pins
 void GPIO_Config()
 {
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+	
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD; // Open-drain mode for I2C
     GPIO_InitStructure.GPIO_Pin = I2C_SDA | I2C_SCL;
@@ -183,77 +179,99 @@ uint8_t I2C_Read(ACK_Bit _ACK)
     return u8Ret;
 }
 
-// Define EEPROM I2C address (7-bit address) and memory location
-uint8_t slave_address = 0x57;
-uint8_t memory_address_high = 0x00;
-uint8_t memory_address_low = 0x10; // Specific memory address in EEPROM
-uint8_t data_to_send = 0x60;
-uint8_t received_data = 0x00;
+// Write a byte to EEPROM at a specific address
+Status EEPROM_WriteByte(uint8_t slave_address, uint8_t memory_address_high, uint8_t memory_address_low, uint8_t data)
+{
+    Status status;
+
+    I2C_Start();  // Start I2C communication
+
+    // Send the slave address with write bit
+    status = I2C_Write(slave_address << 1);
+    if (status != OK) return NOT_OK;
+
+    // Send the high byte of the memory address
+    status = I2C_Write(memory_address_high);
+    if (status != OK) return NOT_OK;
+
+    // Send the low byte of the memory address
+    status = I2C_Write(memory_address_low);
+    if (status != OK) return NOT_OK;
+
+    // Send the data byte
+    status = I2C_Write(data);
+    if (status != OK) return NOT_OK;
+
+    I2C_Stop();  // End write operation
+
+    // Wait for EEPROM write cycle to complete (typically 5 ms)
+    Delay_Us(5000);
+
+    return OK;
+}
+
+// Read a byte from EEPROM from a specific address
+Status EEPROM_ReadByte(uint8_t slave_address, uint8_t memory_address_high, uint8_t memory_address_low, uint8_t* data)
+{
+    Status status;
+
+    // Step 1: Set the memory address for reading
+    I2C_Start();  // Start I2C communication
+
+    // Send the slave address with write bit to set the address
+    status = I2C_Write(slave_address << 1);
+    if (status != OK) return NOT_OK;
+
+    // Send the high byte of the memory address
+    status = I2C_Write(memory_address_high);
+    if (status != OK) return NOT_OK;
+
+    // Send the low byte of the memory address
+    status = I2C_Write(memory_address_low);
+    if (status != OK) return NOT_OK;
+
+    I2C_Start();  // Repeated start for reading
+
+    // Step 2: Read data from EEPROM
+    status = I2C_Write((slave_address << 1) | 1);  // Send slave address with read bit
+    if (status != OK) return NOT_OK;
+
+    *data = I2C_Read(NACK);  // Read data and send NACK to end communication
+
+    I2C_Stop();  // End read operation
+
+    return OK;
+}
+
+
+
 
 int main()
 {
-    RCC_Config();  // Configure clocks for GPIO and Timer
     TIM2_Config(); // Configure Timer2 for delay function
     GPIO_Config(); // Configure GPIO pins for I2C
     I2C_Config();  // Initialize I2C lines (set idle state)
 
-    Status status;
+	// Define EEPROM I2C address (7-bit address) and memory location
+	uint8_t slave_address = 0x57;
+	uint8_t memory_address_high = 0x00;
+	uint8_t memory_address_low = 0x10; // Specific memory address in EEPROM
+	uint8_t data_to_send = 0x80;
+	uint8_t received_data = 0x00;
+	
+	Status status;
 
     while (1)
     {
-        // Start I2C communication and write data to EEPROM
-        I2C_Start();
 
-        status = I2C_Write(slave_address << 1); // Send slave address + write bit
+        // Write data to EEPROM
+        status = EEPROM_WriteByte(slave_address, memory_address_high, memory_address_low, data_to_send);
 
         if (status == OK)
         {
-            // Send high byte of memory address in EEPROM
-            status = I2C_Write(memory_address_high);
-            if (status == OK)
-            {
-                // Send low byte of memory address in EEPROM
-                status = I2C_Write(memory_address_low);
-                if (status == OK)
-                {
-                    // Send data to write to EEPROM
-                    status = I2C_Write(data_to_send);
-                    if (status == OK)
-                    {
-                        I2C_Stop(); // End write operation
-
-                        // Wait for EEPROM write cycle to complete (typically 5ms)
-                        Delay_Us(5000);
-
-                        // Read back data from the same EEPROM address to verify
-                        I2C_Start();
-
-                        status = I2C_Write(slave_address << 1); // Send slave address + write bit to set address
-                        if (status == OK)
-                        {
-                            status = I2C_Write(memory_address_high); // Send high byte of memory address
-                            if (status == OK)
-                            {
-                                status = I2C_Write(memory_address_low); // Send low byte of memory address
-                                if (status == OK)
-                                {
-                                    // Restart communication and send read request
-                                    I2C_Start();
-
-                                    status = I2C_Write((slave_address << 1) | 1); // Send slave address + read bit
-                                    if (status == OK)
-                                    {
-                                        received_data = I2C_Read(NACK); // Read data and send NACK
-                                    }
-                                    I2C_Stop(); // End read operation
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            // Read back data from the same EEPROM address to verify
+            status = EEPROM_ReadByte(slave_address, memory_address_high, memory_address_low, &received_data);
         }
-
         Delay_Us(1000); // Delay before repeating
     }
 }

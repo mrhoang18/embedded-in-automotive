@@ -240,7 +240,7 @@ Một số hàm thao tác với GPIO:
 </p>
 </details>
 
-# LESSON 04: CÁC CHUẨN GIAO TIẾP CƠ BẢN
+# LESSON 04: BASIC COMMUNICATION PROTOCOLS
 <details><summary>Details</summary>
 <p>
 
@@ -756,10 +756,316 @@ int main(void)
 
 ## 1. I2C software
 
+### Cấu hình chân GPIO
+
+```c
+#define I2C_SCL GPIO_Pin_6
+#define I2C_SDA GPIO_Pin_7
+#define I2C_GPIO GPIOB
+
+// Configure GPIO for I2C SDA and SCL pins
+void GPIO_Config()
+{
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+	
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD; // Open-drain mode for I2C
+    GPIO_InitStructure.GPIO_Pin = I2C_SDA | I2C_SCL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+    GPIO_Init(I2C_GPIO, &GPIO_InitStructure);
+}
+```
+
+### Trạng thái ban đầu của SDA, SCK và tín hiệu Start/Stop
+
+<p align="center">
+    <img src="image/i2cs-1.png" alt="alt text" width="700">
+</p>
+
+SDA, SCK khi chưa giap tiếp ở trạng thái mức 1.
+
+Tín hiệu Start: SDA xuống 0 sau đó SCL xuống 0.
+
+Tín hiệu Stop: SCL lên 1 sau đó SDA lên 1.
 
 
+```c
+#define WRITE_SDA_0 GPIO_ResetBits(I2C_GPIO, I2C_SDA)
+#define WRITE_SDA_1 GPIO_SetBits(I2C_GPIO, I2C_SDA)
+#define WRITE_SCL_0 GPIO_ResetBits(I2C_GPIO, I2C_SCL)
+#define WRITE_SCL_1 GPIO_SetBits(I2C_GPIO, I2C_SCL)
+#define READ_SDA_VAL GPIO_ReadInputDataBit(I2C_GPIO, I2C_SDA)
 
+// Initialize I2C line (set SDA and SCL high)
+void I2C_Config()
+{
+    WRITE_SDA_1;
+    Delay_Us(1);
+    WRITE_SCL_1;
+    Delay_Us(1);
+}
+
+// Generate I2C start condition
+void I2C_Start()
+{
+    WRITE_SCL_1;
+    Delay_Us(3);
+    WRITE_SDA_1;
+    Delay_Us(3);
+    WRITE_SDA_0; // Pull SDA low before SCL
+    Delay_Us(3);
+    WRITE_SCL_0;
+    Delay_Us(3);
+}
+
+// Generate I2C stop condition
+void I2C_Stop()
+{
+    WRITE_SDA_0;
+    Delay_Us(3);
+    WRITE_SCL_1; // Pull SCL high before SDA
+    Delay_Us(3);
+    WRITE_SDA_1;
+    Delay_Us(3);
+}
+```
+
+### Hàm truyền và hàm nhận
+
+<p align="center">
+    <img src="image/i2cs-1.png" alt="alt text" width="700">
+</p>
+
+Hàm truyền này dùng chung cho truyền địa chỉ và truyền data (trong trường hợp master gửi chỉ thị cho slave).
+
+```c
+// Write a byte to I2C and check for ACK
+Status I2C_Write(uint8_t u8Data)
+{
+    uint8_t i;
+    Status result;
+
+    for (i = 0; i < 8; i++)
+    { // Write byte bit by bit
+        if (u8Data & 0x80)
+        {
+            WRITE_SDA_1;
+        }
+        else
+        {
+            WRITE_SDA_0;
+        }
+        Delay_Us(3);
+        WRITE_SCL_1; // Clock pulse
+        Delay_Us(5);
+        WRITE_SCL_0;
+        Delay_Us(2);
+        u8Data <<= 1;
+    }
+    WRITE_SDA_1; // Release SDA for ACK bit
+    Delay_Us(3);
+    WRITE_SCL_1; // Clock pulse for ACK bit
+    Delay_Us(3);
+
+    // Check for ACK from slave
+    if (READ_SDA_VAL)
+    {
+        result = NOT_OK;
+    }
+    else
+    {
+        result = OK;
+    }
+
+    Delay_Us(2);
+    WRITE_SCL_0;
+    Delay_Us(5);
+
+    return result;
+}
+```
+
+```c
+// Read a byte from I2C and send ACK/NACK
+uint8_t I2C_Read(ACK_Bit _ACK)
+{
+    uint8_t i;
+    uint8_t u8Ret = 0x00;
+    WRITE_SDA_1; // Release SDA to receive data
+    Delay_Us(3);
+    for (i = 0; i < 8; ++i)
+    {
+        u8Ret <<= 1;
+        WRITE_SCL_1; // Clock pulse
+        Delay_Us(3);
+        if (READ_SDA_VAL)
+        { // Read bit
+            u8Ret |= 0x01;
+        }
+        Delay_Us(2);
+        WRITE_SCL_0;
+        Delay_Us(5);
+    }
+
+    // Send ACK or NACK after reading byte
+    if (_ACK)
+    {
+        WRITE_SDA_0;
+    }
+    else
+    {
+        WRITE_SDA_1;
+    }
+    Delay_Us(3);
+
+    WRITE_SCL_1; // Clock pulse for ACK/NACK
+    Delay_Us(5);
+    WRITE_SCL_0;
+    Delay_Us(5);
+
+    return u8Ret;
+}
+```
+
+### Ứng dụng ghi và đọc Eeprom
+
+<p align="center">
+    <img src="image/i2cs-2.png" alt="alt text" width="700">
+</p>
+
+Quá trình ghi:
+
+Start->chờ xem gửi start được không->gửi địa chỉ slave+1 bit write->chờ ACK->gửi 8 bit high thanh ghi cần ghi của Eeprom->chờ ACK->gửi 8 bit low thanh ghi cần ghi của Eeprom->chờ AKC->gửi data cần ghi->chờ ACK->Stop.
+
+**Hàm ghi vào Eeprom**
+
+```c
+typedef enum
+{
+    NOT_OK = 0,
+    OK = 1
+} Status;
+
+// Write a byte to EEPROM at a specific address
+Status EEPROM_WriteByte(uint8_t slave_address, uint8_t memory_address_high, uint8_t memory_address_low, uint8_t data)
+{
+    Status status;
+
+    I2C_Start();  // Start I2C communication
+
+    // Send the slave address with write bit
+    status = I2C_Write(slave_address << 1);
+    if (status != OK) return NOT_OK;
+
+    // Send the high byte of the memory address
+    status = I2C_Write(memory_address_high);
+    if (status != OK) return NOT_OK;
+
+    // Send the low byte of the memory address
+    status = I2C_Write(memory_address_low);
+    if (status != OK) return NOT_OK;
+
+    // Send the data byte
+    status = I2C_Write(data);
+    if (status != OK) return NOT_OK;
+
+    I2C_Stop();  // End write operation
+
+    // Wait for EEPROM write cycle to complete (typically 5 ms)
+    Delay_Us(5000);
+
+    return OK;
+}
+```
+Theo data sheet thì có nhiều chế độ đọc (Current Address Read, Random Read, Sequential Read).
+
+<p align="center">
+    <img src="image/i2cs-3.png" alt="alt text" width="700">
+</p>
+
+Sau đây là quá trình Random Read nghĩa là đọc giá trị một địa chỉ thanh ghi cụ thể:
+
+Start->chờ xem gửi start được không->gửi địa chỉ slave+1 bit read->chờ ACK->gửi 8 bit high thanh ghi cần đọc của Eeprom->chờ ACK->gửi 8 bit low thanh ghi cần đọc của Eeprom->chờ AKC->đọc data->chờ NACK->Stop.
+
+```c
+typedef enum
+{
+    NACK = 0,
+    ACK = 1
+} ACK_Bit;
+
+// Read a byte from EEPROM from a specific address
+Status EEPROM_ReadByte(uint8_t slave_address, uint8_t memory_address_high, uint8_t memory_address_low, uint8_t* data)
+{
+    Status status;
+
+    // Step 1: Set the memory address for reading
+    I2C_Start();  // Start I2C communication
+
+    // Send the slave address with write bit to set the address
+    status = I2C_Write(slave_address << 1);
+    if (status != OK) return NOT_OK;
+
+    // Send the high byte of the memory address
+    status = I2C_Write(memory_address_high);
+    if (status != OK) return NOT_OK;
+
+    // Send the low byte of the memory address
+    status = I2C_Write(memory_address_low);
+    if (status != OK) return NOT_OK;
+
+    I2C_Start();  // Repeated start for reading
+
+    // Step 2: Read data from EEPROM
+    status = I2C_Write((slave_address << 1) | 1);  // Send slave address with read bit
+    if (status != OK) return NOT_OK;
+
+    *data = I2C_Read(NACK);  // Read data and send NACK to end communication
+
+    I2C_Stop();  // End read operation
+
+    return OK;
+}
+```
+
+**Luồng hoạt động trong main()**
+
+```c
+int main()
+{
+    TIM2_Config(); // Configure Timer2 for delay function
+    GPIO_Config(); // Configure GPIO pins for I2C
+    I2C_Config();  // Initialize I2C lines (set idle state)
+
+	// Define EEPROM I2C address (7-bit address) and memory location
+	uint8_t slave_address = 0x57;
+	uint8_t memory_address_high = 0x00;
+	uint8_t memory_address_low = 0x10; // Specific memory address in EEPROM
+	uint8_t data_to_send = 0x80;
+	uint8_t received_data = 0x00;
+	
+	Status status;
+
+    while (1)
+    {
+
+        // Write data to EEPROM
+        status = EEPROM_WriteByte(slave_address, memory_address_high, memory_address_low, data_to_send);
+
+        if (status == OK)
+        {
+            // Read back data from the same EEPROM address to verify
+            status = EEPROM_ReadByte(slave_address, memory_address_high, memory_address_low, &received_data);
+        }
+		
+        Delay_Us(1000); // Delay before repeating
+    }
+}
+```
 ## 2. I2C hardware
+
+
 </p>
 </details>
 
