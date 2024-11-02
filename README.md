@@ -1065,7 +1065,320 @@ int main()
 ```
 ## 2. I2C hardware
 
+### Cấu hình GPIO và reset SDA, SCL về trạng thái chưa gửi
 
+```c
+void GPIO_Config(void)
+{
+    // Enable the clock for GPIOB
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+
+    GPIO_InitTypeDef GPIO_InitStruct;
+    
+    // 1. Configure SCL and SDA as GPIO Output Push-Pull
+    GPIO_InitStruct.GPIO_Pin = I2C_SCL | I2C_SDA;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // 2. Generate 8 clock pulses on SCL to release SDA
+    for (volatile int i = 0; i < 8; i++) {
+        // Set SCL high
+        GPIO_SetBits(GPIOB, I2C_SCL);
+        Delay_Us(1000);
+        
+        // Set SCL low
+        GPIO_ResetBits(GPIOB, I2C_SCL);
+        Delay_Us(1000);
+    }
+    
+    // 3. Set both SCL and SDA to high level
+    GPIO_SetBits(GPIOB, I2C_SCL | I2C_SDA);
+	Delay_Us(1000);
+	
+    // 4. Reconfigure pins for I2C mode (Alternate Function Open-Drain)
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;
+    GPIO_InitStruct.GPIO_Pin = I2C_SCL | I2C_SDA;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
+```
+
+### Cấu hình tham số I2C Hardware
+
+Tương tự các ngoại vi khác, các tham số I2C được cấu hình trong Struct I2C_InitTypeDef:
+
+ - I2C_Mode: Cấu hình chế độ hoạt động cho I2C:
+
+ - I2C_Mode_I2C: Chế độ I2C FM(Fast Mode);
+
+ - I2C_Mode_SMBusDevice&I2C_Mode_SMBusHost: Chế độ SM(Slow Mode).
+I2C_ClockSpeed: Cấu hình clock cho I2C, tối đa 100khz với SM và 400khz ở FM.
+
+ - I2C_DutyCycle: Cấu hình chu kì nhiệm vụ của xung:
+
+    + I2C_DutyCycle_2: Thời gian xung thấp/ xung cao =2;
+ 
+    + I2C_DutyCycle_16_9: Thời gian xung thấp/ xung cao =16/9;
+
+<p align="center">
+    <img src="image/i2ch-1.png" alt="alt text" width="400">
+</p>
+
+ - I2C_OwnAddress1: Cấu hình địa chỉ thieets bij dang caau hinh.
+ 
+ - I2C_Ack: Cấu hình ACK, có sử dụng ACK hay không.
+ 
+ - I2C_AcknowledgedAddress: Cấu hình số bit địa chỉ. 7 hoặc 10 bit.
+ 
+**Cấu hình mẫu**: 
+
+```c
+void I2C_Config()
+{
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+	
+    I2C_InitTypeDef I2C_InitStructure;
+
+    I2C_InitStructure.I2C_ClockSpeed = 400000; // Fast mode
+    I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+    I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+    I2C_InitStructure.I2C_OwnAddress1 = 0x00; // Address Master
+    I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+    I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+
+    I2C_Init(I2C1, &I2C_InitStructure);
+    I2C_Cmd(I2C1, ENABLE);
+}
+```
+
+### Hàm truyền và nhận
+
+Đây là những hàm có sẵn:
+
+ - Hàm `I2C_Send7bitAddress(I2C_TypeDef* I2Cx, uint8_t Address, uint8_t I2C_Direction)`: Gửi đi 7 bit address để xác định slave cần giao tiếp. Hướng truyền được xác định bởi I2C_Direction để thêm bit RW.
+
+ - Hàm `I2C_SendData(I2C_TypeDef* I2Cx, uint8_t Data)`: Gửi đi 8 bit data.
+
+ - Hàm `I2C_ReceiveData(I2C_TypeDef* I2Cx)`: Trả về 8 bit data.
+
+ - Hàm `I2C_CheckEvent(I2C_TypeDef* I2Cx, uint32_t I2C_EVENT)` trả về kết quả kiểm tra I2C_EVENT tương ứng:
+
+    + `I2C_EVENT_MASTER_MODE_SELECT`: Đợi Bus I2C về chế độ rảnh.
+
+    + `I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED`: Đợi xác nhận của Slave với yêu cầu nhận của Master.
+
+    + `I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED`: Đợi xác nhận của Slave với yêu cầu ghi của Master.
+
+    + `I2C_EVENT_MASTER_BYTE_TRANSMITTED`: Đợi truyền xong 1 byte data từ Master.
+
+    + `I2C_EVENT_MASTER_BYTE_RECEIVED`: Đợi Master nhận đủ 1 byte data.
+
+### Ứng dụng ghi/đọc DS3231 và Eeprom
+
+Quá trình ghi đọc như ở I2c software.
+
+**Cài đặt giờ/phút/giây cho DS3231**:
+
+```c
+#define DS3231_ADDRESS 0x68 // 7-bit I2C address for DS3231
+
+// Function to convert decimal to BCD (Binary-Coded Decimal) format
+uint8_t DecimalToBCD(uint8_t decimal) {
+    return ((decimal / 10) << 4) | (decimal % 10);
+}
+
+// Function to set the time (hours, minutes, and seconds) on the DS3231 RTC
+void DS3231_SetTime(uint8_t hours, uint8_t minutes, uint8_t seconds) {
+    // Convert time values to BCD format
+    uint8_t bcd_seconds = DecimalToBCD(seconds);
+    uint8_t bcd_minutes = DecimalToBCD(minutes);
+    uint8_t bcd_hours = DecimalToBCD(hours);
+
+    // Send START condition on the I2C bus
+    I2C_GenerateSTART(I2C1, ENABLE);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+
+    // Send DS3231 address with write intent
+    I2C_Send7bitAddress(I2C1, DS3231_ADDRESS << 1, I2C_Direction_Transmitter);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+
+    // Send register address 0x00 (seconds register) to start from seconds register
+    I2C_SendData(I2C1, 0x00); // Register 0x00 for seconds
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Write seconds value to the seconds register
+    I2C_SendData(I2C1, bcd_seconds);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Write minutes value to the minutes register
+    I2C_SendData(I2C1, bcd_minutes);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Write hours value to the hours register
+    I2C_SendData(I2C1, bcd_hours);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Send STOP condition to end the I2C communication
+    I2C_GenerateSTOP(I2C1, ENABLE);
+}
+```
+
+**Đọc giờ/phút/giây cho DS3231**:
+
+```c
+// Function to convert from BCD (Binary-Coded Decimal) to decimal
+uint8_t BCDToDecimal(uint8_t bcd) {
+    return ((bcd >> 4) * 10) + (bcd & 0x0F);
+}
+
+// Function to read hours, minutes, and seconds from DS3231
+void DS3231_GetTime(uint8_t* hours, uint8_t* minutes, uint8_t* seconds) {
+	
+    // Send START condition
+    I2C_GenerateSTART(I2C1, ENABLE);
+     while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+	
+    // Send DS3231 address with write intent
+    I2C_Send7bitAddress(I2C1, DS3231_ADDRESS << 1, I2C_Direction_Transmitter);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+
+    // Send register address to start reading from (0x00 for seconds register)
+    I2C_SendData(I2C1, 0x00);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Send repeated START condition to switch to read mode
+    I2C_GenerateSTART(I2C1, ENABLE);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+
+    // Send DS3231 address with read intent
+    I2C_Send7bitAddress(I2C1, DS3231_ADDRESS << 1 | 0x01, I2C_Direction_Receiver);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED));
+
+    // Read seconds from register 0x00
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED));
+    *seconds = I2C_ReceiveData(I2C1);
+
+    // Read minutes from register 0x01
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED));
+    *minutes = I2C_ReceiveData(I2C1);
+
+    // Read hours from register 0x02
+    I2C_AcknowledgeConfig(I2C1, DISABLE); // Send NACK after reading the last byte
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED));
+    *hours = I2C_ReceiveData(I2C1);
+
+    // Send STOP condition to end the read operation
+    I2C_GenerateSTOP(I2C1, ENABLE);
+
+    // Re-enable ACK for future communications
+    I2C_AcknowledgeConfig(I2C1, ENABLE);
+
+    // Convert BCD to decimal format
+    *seconds = BCDToDecimal(*seconds);
+    *minutes = BCDToDecimal(*minutes);
+    *hours = BCDToDecimal(*hours);
+}
+```
+
+**Ghi dữ liệu vào AT24C32**:
+```c
+// Write data to a specific memory address in At24c32
+void At24c32_Write(uint8_t at24c32Addr, uint16_t memAddr, uint8_t dataValue)
+{	
+	// START
+	I2C_GenerateSTART(I2C1, ENABLE);
+	
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+	
+	// Shift address left by 1 to write
+	I2C_Send7bitAddress(I2C1, at24c32Addr << 1 , I2C_Direction_Transmitter);
+	
+	// ACK
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	
+	// Send high byte of memory address
+	I2C_SendData(I2C1, (memAddr >> 8) & 0xFF);
+	
+	// ACK
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	
+	//Send low byte of memory address
+	I2C_SendData(I2C1, memAddr & 0xFF);
+	
+	// ACK
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	
+	// Write data into EEPROM
+	I2C_SendData(I2C1, dataValue);
+	
+	// ACK
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	
+	// STOP
+	I2C_GenerateSTOP(I2C1, ENABLE);
+	
+	// Add a delay to ensure it is completed
+	Delay_Us(10000);
+}
+```
+
+**Đọc dữ liệu ra AT24C32**:
+```c
+// Random read mode
+uint8_t At24c32_Random_Read(uint8_t at24c32Addr, uint16_t memAddr)
+{
+    uint8_t receivedData;
+
+	// Start
+    I2C_GenerateSTART(I2C1, ENABLE);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+
+	// Send slave address with write intent
+    I2C_Send7bitAddress(I2C1, at24c32Addr << 1, I2C_Direction_Transmitter);
+	
+	// ACK
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+
+    // Send high byte of memory address
+    I2C_SendData(I2C1, (memAddr >> 8) & 0xFF);
+	
+	// ACK
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Send low byte of memory address
+    I2C_SendData(I2C1, memAddr & 0xFF);
+	
+	// ACL
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+    // Start
+    I2C_GenerateSTART(I2C1, ENABLE);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+
+	// Send slave address with read intent
+    I2C_Send7bitAddress(I2C1, at24c32Addr << 1 | 0x01, I2C_Direction_Receiver);
+	
+	// ACK
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED));
+
+    // Read data from the specified address with NACK 
+    I2C_AcknowledgeConfig(I2C1, DISABLE);
+    while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED));
+	
+	// Read data
+    receivedData = I2C_ReceiveData(I2C1);
+
+    // STOP
+    I2C_GenerateSTOP(I2C1, ENABLE);
+
+    // Re-enable ACK for future communications
+    I2C_AcknowledgeConfig(I2C1, ENABLE);
+	
+	Delay_Us(10000);
+	
+    return receivedData;
+}
+```
 </p>
 </details>
 
@@ -1080,12 +1393,95 @@ int main()
 # LESSON 08: EXTERNAL, TIMER, COMMUNICATION INTERRUPTS
 <details><summary>Details</summary>
 <p>
+
 </p>
 </details>
 
 # LESSON 09: ADC
 <details><summary>Details</summary>
 <p>
+
+## 1. Lý thuyết ADC
+
+<p align="center">
+    <img src="image/adc-1.png" alt="alt text" width="300">
+</p>
+
+Vi điều khiển cũng như hầu hết các thiết bị điện tử ngày nay đều sử dụng tín hiệu kĩ thuật số, dựa trên các bit nhị phân để hoạt động.
+
+Ngoài tín hiệu số, trong thực tế còn có tín hiệu tương tự và liên tục, vì thế để các thiết bị hiểu được cần phải chuyển đổi nó về dạng số.
+
+ADC (Analog-to-Digital Converter) là 1 mạch điện tử lấy điện áp tương tự làm đầu vào và chuyển đổi nó thành dữ liệu số (1 giá trị đại diện cho mức điện áp trong mã nhị phân).
+
+
+Khả năng chuyển đổi của ADC được quyết định bởi 2 yếu tố chính:
+
+ - Độ phân giải: Số bit mà ADC sử dụng để mã hóa tín hiệu. Có thể xem như là số mức mà tín hiệu tương tự được biểu diễn. ADC có độ phân giải càng cao thì cho ra kết quả chuyển đổi càng chi tiết. 
+
+    <p align="center">
+        <img src="image/adc-2.png" alt="alt text" width="500">
+    </p>
+
+ - Tần số/chu kì lấy mẫu: Tốc độ/khoảng thời gian giữa 2 lần mã hóa. Tần số lấy mẫu càng lớn thì tín hiệu sau khi chuyển đổi sẽ có độ chính xác càng cao. Khả năng tái tạo lại tín hiệu càng chính xác. Tần số lấy mẫu = 1/(Time lấy mẫu + Time chuyển đổi.)
+ 
+    <p align="center">
+        <img src="image/adc-3.png" alt="alt text" width="500">
+    </p>
+
+Tần số lấy mẫu phải lớn hơn tần số của tín hiệu ít nhất 2 lần để đảm bảo độ chính xác khi khôi phục lại tín hiệu.
+
+## 2. ADC trên stm32f103c8t6
+
+STM32F103C8 có 2 bộ ADC đó là ADC1 và ADC2 với nhiều mode hoạt động 
+Kết quả chuyển đổi được lưu trữ trong thanh ghi 16 bit. 
+
+Độ phân giải 12 bit.
+Có các ngắt hỗ trợ.
+Có thể điều khiển hoạt động ADC bằng xung Trigger.
+Thời gian chuyển đổi nhanh : 1us tại tần số 65Mhz.
+Có bộ DMA giúp tăng tốc độ xử lí.
+
+### Cấp xung RCC
+
+Các bộ ADC được cấp xung từ RCC APB2, để bộ ADC hoạt động cần cấp xung cho cả ADC để tạo tần số lấy mẫu tín hiệu và cấp xung cho GPIO của Port ngõ vào.
+
+```c
+void RCC_Config(){
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA| RCC_APB2Periph_ADC1|RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+}
+```
+### Lọc tín hiệu bằng Kalman
+
+Giá trị đo được trên ADC có thể bị nhiễu, vọt lố do nhiều lý do khách quan về phần cứng.
+
+Phương pháp trung bình không thể giảm thiểu nhiễu, thay vào đó sử dụng lọc Kalman.
+
+```c
+// Global variables for Kalman Filter
+float _err_measure = 1;    // Measurement error (initial value)
+float _err_estimate = 1;   // Estimation error (initial value)
+float _q = 0.01;           // Process noise
+float _kalman_gain = 0;
+float _current_estimate = 0;   // Current estimated value
+float _last_estimate = 0;      // Previous estimated value
+
+// Kalman Filter initialization function
+void SimpleKalmanFilter(float mea_e, float est_e, float q){
+    _err_measure = mea_e;
+    _err_estimate = est_e;
+    _q = q;
+}
+
+// Kalman Filter update function
+float updateEstimate(float mea){
+    _kalman_gain = _err_estimate / (_err_estimate + _err_measure);
+    _current_estimate = _last_estimate + _kalman_gain * (mea - _last_estimate);
+    _err_estimate = (1.0 - _kalman_gain) * _err_estimate + fabs(_last_estimate - _current_estimate) * _q;
+    _last_estimate = _current_estimate;
+    return _current_estimate;
+}
+```
 </p>
 </details>
 

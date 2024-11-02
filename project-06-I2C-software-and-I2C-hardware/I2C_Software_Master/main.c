@@ -272,6 +272,7 @@ int main()
             // Read back data from the same EEPROM address to verify
             status = EEPROM_ReadByte(slave_address, memory_address_high, memory_address_low, &received_data);
         }
+		
         Delay_Us(1000); // Delay before repeating
     }
 }

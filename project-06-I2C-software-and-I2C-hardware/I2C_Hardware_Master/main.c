@@ -9,39 +9,33 @@
 
 void GPIO_Config(void)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-	/*
-    GPIO_InitTypeDef GPIO_InitStructure;
+    // Enable the clock for GPIOB
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
-    GPIO_InitStructure.GPIO_Pin = I2C_SCL | I2C_SDA;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(I2C1_GPIO, &GPIO_InitStructure);
-	*/
-	
-	 GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitTypeDef GPIO_InitStruct;
     
-    // 1. Chuy?n SCL sang ch? d? GPIO Output Open-Drain
+    // 1. Configure SCL and SDA as GPIO Output Push-Pull
     GPIO_InitStruct.GPIO_Pin = I2C_SCL | I2C_SDA;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    // 2. T?o 8 xung clock trên SCL d? gi?i phóng SDA
-    for (int i = 0; i < 8; i++) {
-        // Ðua SCL lên cao
+    // 2. Generate 8 clock pulses on SCL to release SDA
+    for (volatile int i = 0; i < 8; i++) {
+        // Set SCL high
         GPIO_SetBits(GPIOB, I2C_SCL);
-        for (volatile int j = 0; j < 1000; j++);  // Ð? tr? ng?n
+        Delay_Us(1000);
         
-        // Ðua SCL xu?ng th?p
+        // Set SCL low
         GPIO_ResetBits(GPIOB, I2C_SCL);
-        for (volatile int j = 0; j < 1000; j++);  // Ð? tr? ng?n
+        Delay_Us(1000);
     }
     
-    // 3. Ðua SCL và SDA tr? l?i m?c cao
+    // 3. Set both SCL and SDA to high level
     GPIO_SetBits(GPIOB, I2C_SCL | I2C_SDA);
-
-    // 4. Khôi ph?c các chân v? ch? d? I2C (Alternate Function Open-Drain)
+	Delay_Us(1000);
+	
+    // 4. Reconfigure pins for I2C mode (Alternate Function Open-Drain)
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;
     GPIO_InitStruct.GPIO_Pin = I2C_SCL | I2C_SDA;
     GPIO_Init(GPIOB, &GPIO_InitStruct);
