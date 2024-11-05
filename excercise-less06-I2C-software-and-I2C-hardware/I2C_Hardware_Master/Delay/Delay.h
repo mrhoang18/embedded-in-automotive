@@ -15,6 +15,7 @@
 #include "stm32f10x.h"                  // Device header
 
 void Delay_Us(uint32_t Time);
+void Delay_Ms(uint32_t Time);
 void TIM2_Config(void);
 
 #endif // DELAY_H

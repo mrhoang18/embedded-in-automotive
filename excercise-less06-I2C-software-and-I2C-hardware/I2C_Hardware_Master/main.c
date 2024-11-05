@@ -4,6 +4,7 @@
 #include "stm32f10x_rcc.h"  // Keil::Device:StdPeriph Drivers:RCC
 #include "stm32f10x_tim.h"  // Keil::Device:StdPeriph Drivers:TIM
 
+#include <stdlib.h>
 #include "Delay.h"
 #include "DS3231_AT24C32.h"
 
@@ -59,7 +60,7 @@ void I2C_Config()
 }
 
 uint8_t At24c32_Address = 0x57;          // 7-bit I2C address of EEPROM
-uint16_t At24c32_MemoryAddress = 0x0010; // Memory address in EEPROM
+uint16_t At24c32_MemoryAddress = 0x0000; // Memory address in EEPROM
 uint8_t At24c32_DataToWrite = 0xC0;      // Data to write to EEPROM
 uint8_t At24c32_DataRead;                // Variable to store read data
 
@@ -69,26 +70,39 @@ int main()
     GPIO_Config();
 	I2C_Config();
 	
-	/*
-	uint8_t hours = 1;
-    uint8_t minutes = 51;
-    uint8_t seconds = 00;
+	
+	/* // Set up time if needed
+	uint8_t set_hours = 1;
+    uint8_t set_minutes = 51;
+    uint8_t set_seconds = 00;
 
     // Set up time for DS3231 if needed
     DS3231_SetTime(hours, minutes, seconds);
 	*/
 	
-	uint8_t hours = 0, minutes = 0, seconds = 0;
+	// uint8_t get_hours = 0, get_minutes = 0, get_seconds = 0;
 
+	uint8_t Array_DataToWrite[3] = {0x01, 0x02, 0x03};
+	uint8_t Array_DataToRead[3] = {0x00, 0x00, 0x00};
+	
     while (1)
     {
-		DS3231_GetTime(&hours, &minutes, &seconds);
+		// DS3231_GetTime(&get_hours, &get_minutes, &get_seconds);
 		
         // Write data to At24c32 at specified memory address
         // At24c32_Write(At24c32_Address, At24c32_MemoryAddress, At24c32_DataToWrite);
 
-        // Read data back from the same At24c32 memory address
-        // At24c32_DataRead = At24c32_Random_Read(At24c32_Address, At24c32_MemoryAddress);
-		
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		At24c32_Write(At24c32_Address, At24c32_MemoryAddress + i, Array_DataToWrite[i]); 
+	}
+	
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		Array_DataToRead[i] = At24c32_Random_Read(At24c32_Address, At24c32_MemoryAddress + i); 
+		// Array_DataToRead
+		Delay_Ms(1000);
+	}
+	
     }
 }

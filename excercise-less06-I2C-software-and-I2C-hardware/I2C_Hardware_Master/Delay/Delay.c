@@ -19,6 +19,12 @@ void Delay_Us(uint32_t Time)
     while (TIM_GetCounter(TIM2) < Time);
 }
 
+void Delay_Ms(uint32_t Time) {
+    for (uint32_t i = 0; i < Time; i++) {
+        Delay_Us(500); // 1000 µs = 1 ms
+    }
+}
+
 // Configure TIM2 to use as a microsecond delay timer
 void TIM2_Config()
 {

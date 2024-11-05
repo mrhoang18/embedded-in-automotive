@@ -2210,6 +2210,51 @@ Giả sử có ID  và 3 byte data hoặc cả 4 byte data, cách tính như nha
 # LESSON 15: AUTOSAR CLASSIC
 <details><summary>Details</summary>
 <p>
+
+## 1. Định nghĩa AUTOSAR
+
+AUTOSAR (AUTomotive Open System ARchitecture) là một tiêu chuẩn quốc tế về kiến trúc phần mềm cho các hệ thống điện tử trong ô tô. AUTOSAR ra đời nhằm mục đích tiêu chuẩn hóa và chuẩn hóa kiến trúc phần mềm cho các hệ thống điều khiển nhúng trong ô tô.
+
+Có sẵn các tiêu chuẩn để dựa vào.
+
+Khả năng tái sử dụng phần mềm cao với các dự án khác nhau.
+
+Dễ dàng thay đổi để tương thích với các dòng MCU khác nhau.
+
+Phần mềm và phần cứng được tách biệt với nhau.
+
+Dễ quản lý và bảo trì phần mềm.
+
+<p align="center">
+    <img src="image/autosar-1.png" alt="alt text" width="600">
+</p>
+
+## 2. SWC
+
+SWC (Software-Components) là các khối phần mềm ứng dụng, đại diện cho chức năng cụ thể trong hệ thống. Các SWC là thành phần độc lập, giao tiếp với nhau và với các thành phần khác trong hệ thống thông qua RTE.
+
+ - Mỗi SWC thực hiện 1 chức năng cụ thể trong hệ thống ECU.
+
+ - Chỉ cần quan tâm đến các logic, không cần quan tâm đến phần cứng.
+
+## 3. RTE
+
+RTE (Runtime Environment) là lớp trung gian, đảm nhiệm việc truyền thông giữa các SWC và giữa SWC với BSW. Nó đảm bảo rằng các SWC có thể giao tiếp với nhau một cách trong suốt, không cần biết về các cơ chế truyền thông thực tế. RTE có 2 chức năng chính:
+
+ - Giúp các SWC giao tiếp với nhau và là lớp trung gian với BSW.
+
+ - Phân chia lịch trình và quản lý việc gọi các chức năng.
+
+## 4. BSW
+
+BSW (Basic Software) là lớp phần mềm nền tảng để hỗ trợ phần mềm ứng dụng (SWC) hoạt động trên phần cứng. BSW cung cấp các dịch vụ cơ bản như quản lý phần cứng, giao tiếp, chẩn đoán, và các dịch vụ hệ thống.
+
+ - Service: Cung cấp các dịch vụ hệ thống, tiện ích và quản lý cần thiết để hỗ trợ các lớp phần mềm ứng dụng và BSW khác.
+
+ - EAL (ECU Abstraction Layer): Cung cấp một giao diện trừu tượng cho tất cả các thiết bị ngoại vi và phần cứng cụ thể của ECU như các cảm biến mà ECU sử dụng.
+
+ - MCAL (Microcontroller Abstraction Layer): Cung cấp giao diện trừu tượng để tương tác trực tiếp với các thành phần phần cứng và điều khiển như GPIO, ADC, PWM...
+
 </p>
 </details>
 

@@ -177,22 +177,22 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>At24c32_DataRead</ItemText>
+          <ItemText>get_hours</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>hours,0x0A</ItemText>
+          <ItemText>get_minutes</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>minutes,0x0A</ItemText>
+          <ItemText>get_seconds</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>seconds,0x0A</ItemText>
+          <ItemText>Array_DataToRead</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
