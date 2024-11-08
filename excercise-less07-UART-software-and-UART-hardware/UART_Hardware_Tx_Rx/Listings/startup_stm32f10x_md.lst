@@ -475,15 +475,15 @@ ARM Macro Assembler    Page 8
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\objects\startup_stm32f10x_md.d -o.\objects\startup_stm32f10x_md.
-o -IC:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\projec
-t-07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE -IC:\Users\yamch\D
-esktop\embedded-in-automotive\embedded-in-automotive\project-07-UART-software-a
-nd-UART-hardware\UART_Hardware_Tx_Rx\RTE\Device\STM32F103C8 -IC:\Keil_v5\ARM\PA
-CK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1
-\Device\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph
-_Driver\inc --predefine="__UVISION_VERSION SETA 517" --predefine="_RTE_ SETA 1"
- --predefine="STM32F10X_MD SETA 1" --list=.\listings\startup_stm32f10x_md.lst R
-TE\Device\STM32F103C8\startup_stm32f10x_md.s
+o -IC:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excerc
+ise-less07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE -IC:\Users\y
+amch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less07-UAR
+T-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE\Device\STM32F103C8 -IC:\Ke
+il_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F1
+xx_DFP\2.4.1\Device\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Devi
+ce\StdPeriph_Driver\inc --predefine="__UVISION_VERSION SETA 517" --predefine="_
+RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --list=.\listings\startup_stm32f
+10x_md.lst RTE\Device\STM32F103C8\startup_stm32f10x_md.s
 
 
 

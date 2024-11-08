@@ -1661,24 +1661,6 @@ Cài đặt Period = 10-1 ứng với ngắt mỗi 1ms.
 
 Hàm TIM_ITConfig(TIMx, TIM_IT_Update, ENABLE) kích hoạt ngắt cho TIMERx tương ứng.
 
-```c
-
-void TIM_Config()
-{
-   
-TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
-RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-TIM_TimeBaseInitStruct.TIM_Prescaler = 7200-1;
-TIM_TimeBaseInitStruct.TIM_Period = 10-1;
-TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
-TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
-TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
-
-   TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-   TIM_Cmd(TIM2, ENABLE);
-}
-```
-
 ### Cấu hình NVIC
 
 Ở NVIC, ta cấu hình tương tự như ngắt ngoài EXTI, tuy nhiên NVIC_IRQChannel được đổi thành TIM_IRQn để khớp với line ngắt timer.
@@ -1756,6 +1738,7 @@ void TIM2_IRQHandler()
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 }
 ```
+
 ## 3. Ngắt truyền thông
 
 STM32F1 hỗ trọ các ngắt cho các giao thức truyền nhận như SPI, I2C, UART…
@@ -1766,11 +1749,124 @@ Các ngắt ở SPI, I2C… sẽ được cấu hình tương tự như UART.
 
 ### Cấu hình UART
 
+Đầu tiên, các cấu hình tham số cho UART thực hiện bình thường.
+
+Trước khi cho phép UART hoạt động, cần kích hoạt ngắt UART bằng cách gọi hàm `USART_ITConfig()`;
+
+Hàm `USART_ClearFlag(USART1, USART_IT_RXNE)`; được gọi để xóa cờ ngắt ban đầu.
+
+Gồm 3 tham số:
+
+`USART_TypeDef* USARTx`: Bộ UART cần cấu hình.
+
+`uint16_t USART_IT`: Chọn nguồn ngắt UART, có nhiều nguồn ngắt từ UART, ở bài này ta chú ý đến ngắt truyền (USART_IT_TXE) và ngắt nhận (USART_IT_RXNE).
+
+`FunctionalState NewState`: Cho phép ngắt.
+
 ### Cấu hình NVIC
+
+Ở NVIC, ta cấu hình tương tự như ngắt ngoài EXTI, ngắt Timer, tuy nhiên NVIC_IRQChannel được đổi thành UARTx_IRQn.
+
+**Cấu hình mẫu cho ngắt nhận UART**:
+
+```c
+void UART_Config(void) 
+{
+    // Bật Clock cho USART1
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+    // Bật Clock cho GPIOA (dùng cho các chân TX và RX)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+    // Cấu hình PA9 (TX) làm chân xuất với chế độ chức năng thay thế push-pull
+    GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Cấu hình PA10 (RX) làm chân nhập với chế độ input floating
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Cấu hình các thông số cho UART
+    USART_InitTypeDef UART_InitStruct;
+    UART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;           // Chế độ RX và TX
+    UART_InitStruct.USART_BaudRate = 9600;                                // Tốc độ Baud 9600
+    UART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // Không dùng kiểm soát luồng phần cứng
+    UART_InitStruct.USART_WordLength = USART_WordLength_8b;               // Độ dài dữ liệu 8 bit
+    UART_InitStruct.USART_StopBits = USART_StopBits_1;                    // 1 bit dừng
+    UART_InitStruct.USART_Parity = USART_Parity_No;                       // Không dùng bit chẵn lẻ
+    USART_Init(USART1, &UART_InitStruct);
+
+    // Kích hoạt ngắt RX
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
+    // Kích hoạt USART1
+    USART_Cmd(USART1, ENABLE);
+}
+
+void NVIC_Config(void) 
+{
+    // Thiết lập cấu hình nhóm ưu tiên ngắt
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 2 bit cho Preemption Priority, 2 bit cho Sub Priority
+
+    // Cấu hình ngắt cho USART1 trong NVIC
+    NVIC_InitTypeDef NVIC_InitStruct;
+    NVIC_InitStruct.NVIC_IRQChannel = USART1_IRQn;            // Chọn kênh ngắt của UART1
+    NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;    // Thiết lập độ ưu tiên preemption
+    NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;           // Thiết lập độ ưu tiên sub
+    NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;              // Kích hoạt kênh ngắt trong NVIC
+    NVIC_Init(&NVIC_InitStruct);
+}
+```
 
 ### Hàm phục vụ ngắt UART
 
+Hàm `USARTx_IRQHandler()` sẽ được gọi nếu xảy ra ngắt trên Line ngắt UART đã cấu hình. 
 
+Hàm `USART_GetITStatus` kiểm tra các cờ ngắt UART. Hàm này nhận 2 tham số là bộ USART và cờ tương ứng cần kiểm tra:
+
+ - `USART_IT_RXNE`: Cờ ngắt nhận, cờ này set lên 1 khi bộ USART phát hiện data truyền tới.
+
+ - `USART_IT_TXE`: Cờ ngắt truyền, cờ này set lên 1 khi USART truyền data xong.
+
+Có thể xóa cờ ngắt, gọi hàm USART_ClearITPendingBit để đảm bảo không còn ngắt trên line (thông thường cờ ngắt sẽ tự động xóa).
+
+Trong hàm ngắt, ta thực hiện:
+
+ - Kiểm tra ngắt
+
+ - Nhận và lưu data từ USART1.
+
+ - Kiểm tra cờ ngắt truyền, đảm bảo USART đang rỗi.
+
+ - Truyền lại data vừa nhận được.
+
+ - Xóa cờ ngắt, thoát khỏi hàm.
+
+**Hàm phục vụ ngắt UART nhận data mẫu**:
+```c
+uint8_t data = 0x00;
+void USART1_IRQHandler()
+{
+    // Kiểm tra nếu có ngắt RXNE (dữ liệu đã được nhận)
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
+        // Đọc dữ liệu từ bộ đệm nhận
+        data = USART_ReceiveData(USART1);
+
+        // Chờ cho đến khi bộ đệm truyền sẵn sàng (TXE)
+        while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+
+        // Gửi lại dữ liệu vừa nhận được
+        USART_SendData(USART1, data);
+
+        // Xóa cờ ngắt RXNE
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    }
+}
+```
 
 </p>
 </details>

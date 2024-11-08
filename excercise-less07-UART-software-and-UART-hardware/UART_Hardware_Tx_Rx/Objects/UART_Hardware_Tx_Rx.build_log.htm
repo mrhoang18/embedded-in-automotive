@@ -21,12 +21,15 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.18.0
 Dialog DLL:      TCM.DLL V1.14.6.0
  
 <h2>Project:</h2>
-C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\project-07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\UART_Hardware_Tx_Rx.uvprojx
+C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\UART_Hardware_Tx_Rx.uvprojx
 Project File Date:  10/30/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 1 (build 61)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
+compiling main.c...
+linking...
+Program Size: Code=1724 RO-data=268 RW-data=24 ZI-data=1632  
 ".\Objects\UART_Hardware_Tx_Rx.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -39,18 +42,18 @@ Package Vendor: ARM
 
 Package Vendor: Keil
                 https://www.keil.com/pack/Keil.STM32F1xx_DFP.2.4.1.pack
-                Keil::Device:StdPeriph Drivers:Framework:3.6.0
+                Keil::Device:StdPeriph Drivers:RCC:3.6.0
                 STMicroelectronics STM32F1 Series Device Support, Drivers and Examples
-   * Component: Framework Version: 3.6.0
-   * Component: Startup Version: 1.0.0
-   * Component: GPIO Version: 3.6.0
    * Component: RCC Version: 3.6.0
-   * Component: USART Version: 3.6.0
+   * Component: Framework Version: 3.6.0
+   * Component: GPIO Version: 3.6.0
+   * Component: Startup Version: 1.0.0
    * Component: TIM Version: 3.6.0
+   * Component: USART Version: 3.6.0
 
 <h2>Collection of Component include folders:</h2>
-  C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\project-07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE
-  C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\project-07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE\Device\STM32F103C8
+  C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE
+  C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less07-UART-software-and-UART-hardware\UART_Hardware_Tx_Rx\RTE\Device\STM32F103C8
   C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
   C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include
   C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc
@@ -59,35 +62,35 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:4.3.0
 
+   * Component: Keil::Device:StdPeriph Drivers:RCC:3.6.0
+      Include file:  Device\StdPeriph_Driver\inc\stm32f10x_rcc.h
+      Source file:   Device\StdPeriph_Driver\src\stm32f10x_rcc.c
+
    * Component: Keil::Device:StdPeriph Drivers:Framework:3.6.0
       Include file:  Device\StdPeriph_Driver\inc\misc.h
       Source file:   Device\StdPeriph_Driver\src\misc.c
+      Include file:  Device\StdPeriph_Driver\templates\stm32f10x_it.h
       Source file:   Device\StdPeriph_Driver\templates\stm32f10x_conf.h
       Source file:   Device\StdPeriph_Driver\templates\stm32f10x_it.c
-      Include file:  Device\StdPeriph_Driver\templates\stm32f10x_it.h
-
-   * Component: Keil::Device:Startup:1.0.0
-      Source file:   Device\Source\system_stm32f10x.c
-      Source file:   Device\Source\ARM\startup_stm32f10x_md.s
-      Source file:   Device\Source\ARM\STM32F1xx_OPT.s
-      Include file:  RTE_Driver\Config\RTE_Device.h
 
    * Component: Keil::Device:StdPeriph Drivers:GPIO:3.6.0
-      Include file:  Device\StdPeriph_Driver\inc\stm32f10x_gpio.h
       Source file:   Device\StdPeriph_Driver\src\stm32f10x_gpio.c
+      Include file:  Device\StdPeriph_Driver\inc\stm32f10x_gpio.h
 
-   * Component: Keil::Device:StdPeriph Drivers:RCC:3.6.0
-      Source file:   Device\StdPeriph_Driver\src\stm32f10x_rcc.c
-      Include file:  Device\StdPeriph_Driver\inc\stm32f10x_rcc.h
-
-   * Component: Keil::Device:StdPeriph Drivers:USART:3.6.0
-      Include file:  Device\StdPeriph_Driver\inc\stm32f10x_usart.h
-      Source file:   Device\StdPeriph_Driver\src\stm32f10x_usart.c
+   * Component: Keil::Device:Startup:1.0.0
+      Source file:   Device\Source\ARM\STM32F1xx_OPT.s
+      Source file:   Device\Source\ARM\startup_stm32f10x_md.s
+      Source file:   Device\Source\system_stm32f10x.c
+      Include file:  RTE_Driver\Config\RTE_Device.h
 
    * Component: Keil::Device:StdPeriph Drivers:TIM:3.6.0
-      Source file:   Device\StdPeriph_Driver\src\stm32f10x_tim.c
       Include file:  Device\StdPeriph_Driver\inc\stm32f10x_tim.h
-Build Time Elapsed:  00:00:00
+      Source file:   Device\StdPeriph_Driver\src\stm32f10x_tim.c
+
+   * Component: Keil::Device:StdPeriph Drivers:USART:3.6.0
+      Source file:   Device\StdPeriph_Driver\src\stm32f10x_usart.c
+      Include file:  Device\StdPeriph_Driver\inc\stm32f10x_usart.h
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

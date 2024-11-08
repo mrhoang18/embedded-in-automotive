@@ -80,6 +80,6 @@ int main()
     while (1)
     {
         data = UART_ReceiveChar(USART1);
-        //UART_SendChar(USART1, data);
+        UART_SendChar(USART1, data);
     }
 }
