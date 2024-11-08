@@ -1538,18 +1538,19 @@ Chọn chân GPIO nào sẽ kết nối với line ngắt thông qua cấu hình
 
 Hàm `GPIO_EXTILineConfig(uint8_t GPIO_PortSource, uint8_t GPIO_PinSource)` cấu hình chân ở chế độ sử dụng ngắt ngoài:
 
-    - `GPIO_PortSource`: Chọn Port để sử dụng làm nguồn cho ngắt ngoài.
+ - `GPIO_PortSource`: Chọn Port để sử dụng làm nguồn cho ngắt ngoài.
 
-    - `GPIO_PinSource`: Chọn Pin để cấu hình.
+ - `GPIO_PinSource`: Chọn Pin để cấu hình.
 
 Các tham số ngắt ngoài được cấu hình trong `Struct EXTI_InitTypeDef`, gồm:
-    - `EXTI_Line`: Chọn line ngắt.
 
-    - `EXTI_Mode`: Chọn Mode cho ngắt là Ngắt (thực thi hàm ngắt) hay Sự kiện (Không thực thi).
+ - `EXTI_Line`: Chọn line ngắt.
 
-    - `EXTI_Trigger`: Cấu hình cạnh ngắt.
+ - `EXTI_Mode`: Chọn Mode cho ngắt là Ngắt (thực thi hàm ngắt) hay Sự kiện (Không thực thi).
 
-    - `EXTI_LineCmd`: Cho phép ngắt ở Line đã cấu hình.
+ - `EXTI_Trigger`: Cấu hình cạnh ngắt.
+
+ - `EXTI_LineCmd`: Cho phép ngắt ở Line đã cấu hình.
 
 ### Cấu hình NVIC
 
@@ -1563,23 +1564,23 @@ Hàm NVIC_PriorityGroupConfig(), phân chia số lượng bit dành cho Preempti
 
 Bộ NVIC cấu hình các tham số ngắt và quản lý các vecto ngắt. Các tham số được cấu hình trong `NVIC_InitTypeDef`, bao gồm:
 
-    - `NVIC_IRQChannel`: Cấu hình Vector Line ngắt tương ứng với ngắt sử dụng:
+ - `NVIC_IRQChannel`: Cấu hình Vector Line ngắt tương ứng với ngắt sử dụng:
+
+    + Vector EXTI0 -> EXTI4: Quản lý Line0->Line4.
+
+    + Vector EXTI9_5: Quản lý Line5->Line9.
+
+    + Vector EXTI15_10: Quản lý Line10->Line15.
 
 <p align="center">
     <img src="image/exti-4.png" alt="alt text" width="400">
 </p>
 
-        + Vector EXTI0 -> EXTI4: Quản lý Line0->Line4.
+ - `NVIC_IRQChannelPreemptionPriority`: Độ ưu tiên chính.
 
-        + Vector EXTI9_5: Quản lý Line5->Line9.
+ - `NVIC_IRQChannelSubPriority`: Độ ưu tiên phụ.
 
-        + Vector EXTI15_10: Quản lý Line10->Line15.
-    
-    - `NVIC_IRQChannelPreemptionPriority`: Độ ưu tiên chính.
-    
-    - `NVIC_IRQChannelSubPriority`: Độ ưu tiên phụ.
-    
-    - `NVIC_IRQChannelCmd`: ENABLE/DISABLE ngắt.
+ - `NVIC_IRQChannelCmd`: ENABLE/DISABLE ngắt.
 
 **Cấu hình mẫu cho chân PA0 làm ngắt ngoài**:
 
@@ -1629,11 +1630,11 @@ Hàm EXTI_ClearITPendingBit(EXTI_Linex): Xóa cờ ngắt ở line x.
 
 Trong hàm phục vụ ngắt ngoài, chúng ta sẽ thực hiện:
 
-    - Kiểm tra ngắt đến từ line nào, có đúng là line cần thực thi hay không?
-    
-    - Thực hiện các lệnh, các hàm.
+ - Kiểm tra ngắt đến từ line nào, có đúng là line cần thực thi hay không?
 
-    - Xóa cờ ngắt ở line.
+ - Thực hiện các lệnh, các hàm.
+
+ - Xóa cờ ngắt ở line.
 
 **Hàm ngắt mẫu**:
 
