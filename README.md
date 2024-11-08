@@ -247,7 +247,7 @@ Khi một ngắt xảy ra, vi điều khiển sẽ lưu lại trạng thái hi�
 Có 3 loại ngắt chính: Ngắt ngoài, ngắt timer, ngắt truyền thông.
 
 <p align="center">
-    <img src="image/itr-1.png" alt="alt text" width="300">
+    <img src="image/itr-1.png" alt="alt text" width="600">
 </p>
 
 ### Vector table
@@ -348,7 +348,7 @@ void Delay_ms(uint16_t time_ms)
     TIM_SetCounter(TIM2, 0);
 
     // Calculate the required ticks
-    uint16_t ticks = time_ms * 10; // With Timer frequency at 10 kHz, each tick equals 0.1 ms
+    uint16_t ticks = time_ms * 10; // With Timer frequency at 10 kHz, each tick equals 1 ms
 
     // Wait until the counter reaches the required ticks
     while (TIM_GetCounter(TIM2) < ticks);
