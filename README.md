@@ -430,7 +430,7 @@ _Điện trở kéo lên: Thường 4.7 kΩ, VCC: Thường là 3.3V hoặc 5V �
 ### I2C frame và quá trình truyền nhận
 
 <p align="center">
-    <img src="image/com-5.png" alt="alt text" width="500">
+    <img src="image/com-5.png" alt="alt text" width="600">
 </p>
 
 Một frame thông điệp của I2C gồm:
@@ -447,6 +447,10 @@ Một frame thông điệp của I2C gồm:
 
 ## 3. UART - Universal Asynchronous Receiver-Transmitter
 ### Đặc điểm và cấu trúc vật lý
+
+<p align="center">
+    <img src="image/com-8.png" alt="alt text" width="500">
+</p>
 
 UART là chuẩn giao tiếp nối tiếp, không đồng bộ, song công.
 
