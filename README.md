@@ -367,6 +367,10 @@ void Delay_ms(uint16_t time_ms)
 
 ### Đặc điểm và cấu trúc vật lý
 
+<p align="center">
+    <img src="image/com-1.png" alt="alt text" width="350">
+</p>
+
 SPI là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, song công.
 
 Bốn chân giao tiếp gồm:
@@ -375,25 +379,22 @@ Bốn chân giao tiếp gồm:
  - MOSI (Master Output Slave Input): Slave nhận tín hiệu từ Master.
  - CS (Chip Select): Chọn Slave cụ thể để giao tiếp bằng cách xuất tín hiệu đường SS tương ứng xuống mức 0 (Low). 
 
-<p align="center">
-    <img src="image/com-1.png" alt="alt text" width="350">
-</p>
 
 ### SPI frame và quá trình truyền nhận
 
-Một frame thông điệp trong SPI thường là 8 bit.
+<p align="center">
+    <img src="image/com-2.png" alt="alt text" width="500">
+</p>
+
+Một frame thông điệp trong SPI thường là 8 bit, gửi MSB trước hoặc LSB trước tùy hệ thống.
 
 - Bắt đầu, master sẽ kéo chân CS của slave muốn giao tiếp xuống 0.
 
-- Clock sẽ được cấp bởi master, tùy vào **chế độ hoạt động**, với mỗi xungc clock,  1 bit sẽ được truyền từ master đến slave và slave cũng truyền 1 bit cho master, có thể gửi MSB trước hoặc LSB trước tùy hệ thống.
+- Clock sẽ được cấp bởi master, tùy vào **chế độ hoạt động**, với mỗi xungc clock,  1 bit sẽ được truyền từ master đến slave và slave cũng truyền 1 bit cho master.
 
 - Lặp lại quá trình trên đến khi truyền xong 8 bit.
 
 - Kết thúc, master kéo chân CS lên 1.
-
-<p align="center">
-    <img src="image/com-2.png" alt="alt text" width="350">
-</p>
 
 ### Chế độ hoạt động
 
@@ -407,7 +408,7 @@ SPI có 4 chế độ hoạt động phụ thuộc vào CPOL - Clock Polarity v�
  - CPHA = 1: Bit data được gửi tại cạnh thứ hai của xung clock.
 
 <p align="center">
-    <img src="image/com-3.png" alt="alt text" width="350">
+    <img src="image/com-3.png" alt="alt text" width="500">
 </p>
 
 ## 2. I2C - Inter-Integrated Circuit
@@ -421,7 +422,7 @@ Hai dây giao tiếp gồm:
  - SCL (Serial Clock Line) Dây xung clock.
 
 <p align="center">
-    <img src="image/com-4.png" alt="alt text" width="350">
+    <img src="image/com-4.png" alt="alt text" width="500">
 </p>
 
 _Điện trở kéo lên: Thường 4.7 kΩ, VCC: Thường là 3.3V hoặc 5V để chống nhiễu_.
@@ -429,7 +430,7 @@ _Điện trở kéo lên: Thường 4.7 kΩ, VCC: Thường là 3.3V hoặc 5V �
 ### I2C frame và quá trình truyền nhận
 
 <p align="center">
-    <img src="image/com-5.png" alt="alt text" width="350">
+    <img src="image/com-5.png" alt="alt text" width="500">
 </p>
 
 Một frame thông điệp của I2C gồm:
@@ -466,7 +467,7 @@ Ví dụ: baudrate = 9600 => 1 bit  = 0.10467 ms.
 ### UART frame và quá trình truyền nhận
 
 <p align="center">
-    <img src="image/com-6.png" alt="alt text" width="400">
+    <img src="image/com-6.png" alt="alt text" width="500">
 </p>
 
 Một frame UART thông thường bao gồm các thành phần sau:
