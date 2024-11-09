@@ -363,50 +363,145 @@ void Delay_ms(uint16_t time_ms)
 <details><summary>Details</summary>
 <p>
 
-## 1. SPI
+## 1. SPI - Serial Peripheral Interface
 
-## Đặc điểm và cấu trúc vật lý
+### Đặc điểm và cấu trúc vật lý
 
-SPI là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, song công (truyền nhận cùng một lúc được), 4 dây.
+SPI là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, song công.
+
+Bốn chân giao tiếp gồm:
+ - SCK (Serial Clock): Master tạo xung tín hiệu SCK và cung cấp cho Slave.
+ - MISO (Master Input Slave Output): Master nhận tín hiệu từ Slave.
+ - MOSI (Master Output Slave Input): Slave nhận tín hiệu từ Master.
+ - CS (Chip Select): Chọn Slave cụ thể để giao tiếp bằng cách xuất tín hiệu đường SS tương ứng xuống mức 0 (Low). 
 
 <p align="center">
     <img src="image/com-1.png" alt="alt text" width="350">
 </p>
 
-Bốn chân giao tiếp gồm:
- - SCK (Serial Clock): Master tạo xung tín hiệu SCK và cung cấp cho Slave.
- - MISO (Master Input Slave Output): Tín hiệu tạo bởi Slave và nhận bởi Master.
- - MOSI (Master Output Slave Input): Tín hiệu tạo bởi Master và nhận bởi Slave. 
- - SS (Đôi khi CS- Slave Select/Chip Select): Chọn Slave cụ thể để giao tiếp bằng cách xuất tín hiệu đường SS tương ứng xuống mức 0 (Low). 
+### SPI frame và quá trình truyền nhận
 
-## Quá trình truyền nhận
+Một frame thông điệp trong SPI thường là 8 bit.
 
+- Bắt đầu, master sẽ kéo chân CS của slave muốn giao tiếp xuống 0.
 
-Bắt đầu quá trình, master sẽ kéo chân CS của slave muốn giao tiếp xuống 0 để báo hiệu muốn truyền nhận.
-Clock sẽ được cấp bởi master, tùy vào chế độ được cài, với mỗi xungc clock,  1 bit sẽ được truyền từ master đến slave và slave cũng truyền 1 bit cho master.
-Các thanh ghi cập nhật giá trị và dịch 1 bit.
-Lặp lại quá trình trên đến khi truyền xong 8 bit trong thanh ghi.
-Giao tiếp song công.
+- Clock sẽ được cấp bởi master, tùy vào **chế độ hoạt động**, với mỗi xungc clock,  1 bit sẽ được truyền từ master đến slave và slave cũng truyền 1 bit cho master, có thể gửi MSB trước hoặc LSB trước tùy hệ thống.
 
-## Các chế độ hoạt động
+- Lặp lại quá trình trên đến khi truyền xong 8 bit.
 
-## 2. I2C
-## Đặc điểm và cấu trúc vật lý
+- Kết thúc, master kéo chân CS lên 1.
 
-I2C là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, bán song công (chỉ truyền hoặc nhận tại một thời điểm), 2 dây.
+<p align="center">
+    <img src="image/com-2.png" alt="alt text" width="350">
+</p>
 
-## Quá trình truyền nhận
-## Các chế độ hoạt động
+### Chế độ hoạt động
 
+SPI có 4 chế độ hoạt động phụ thuộc vào CPOL - Clock Polarity và CPHA - Clock Phase.
 
-## 2. UART
-## Đặc điểm và cấu trúc vật lý
+Ý nghĩa của CPOL và CPHA:
 
-UART là chuẩn giao tiếp nối tiếp, không đồng bộ, song công, 2 dây
+ - CPOL = 0: Xung clock ở mức thấp (0) khi bus ở trạng thái nghỉ.
+ - CPOL = 1: Xung clock ở mức cao (1) khi bus ở trạng thái nghỉ.
+ - CPHA = 0: Bit data được gửi tại cạnh đầu tiên của xung clock.
+ - CPHA = 1: Bit data được gửi tại cạnh thứ hai của xung clock.
 
+<p align="center">
+    <img src="image/com-3.png" alt="alt text" width="350">
+</p>
 
-## Quá trình truyền nhận
-## Các chế độ hoạt động
+## 2. I2C - Inter-Integrated Circuit
+### Đặc điểm và cấu trúc vật lý
+
+I2C là chuẩn giao tiếp nối tiếp, đồng bộ, cấu trúc Master - Slave, bán song công.
+
+Hai dây giao tiếp gồm:
+
+ - SDA (Serial Data Line): Dây truyền dữ liệu.
+ - SCL (Serial Clock Line) Dây xung clock.
+
+<p align="center">
+    <img src="image/com-4.png" alt="alt text" width="350">
+</p>
+
+_Điện trở kéo lên: Thường 4.7 kΩ, VCC: Thường là 3.3V hoặc 5V để chống nhiễu_.
+
+### I2C frame và quá trình truyền nhận
+
+<p align="center">
+    <img src="image/com-5.png" alt="alt text" width="350">
+</p>
+
+Một frame thông điệp của I2C gồm:
+
+ - Start: SDA từ 1 xuống 0 trước SCL.
+
+ - 7->10 bit địa chỉ + 1 bit 0 hoặc 1 tương ứng với ghi/đọc, gửi MSB trước.
+
+ - ACK: Nếu Slave nhận được đúng địa chỉ nó sẽ gửi một bit ACK = 0.
+
+ - 8 bit data: Có thể là data do Master gửi (write) hoặc đọc về từ Slave (read), gửi MSB trước.
+
+ - Stop: SDA từ 0 lên 1 sau SCL.
+
+## 3. UART - Universal Asynchronous Receiver-Transmitter
+### Đặc điểm và cấu trúc vật lý
+
+UART là chuẩn giao tiếp nối tiếp, không đồng bộ, song công.
+
+Hai dây giao tiếp gồm:
+
+ - TX (Transmit):  Truyền dữ liệu ra.
+
+ - RX (Receive): Nhận  dữ liệu vào.
+
+Cả hai thiết bị trong giao tiếp UART dùng baud rate khớp nhau để truyền nhận dữ liệu chính xác.
+
+Baud rate là tốc độ truyền dữ liệu được tính bằng số bit trên giây.
+
+Các mức baud rate có sẵn: 9600, 19200, 38400, 57600, ...
+
+Ví dụ: baudrate = 9600 => 1 bit  = 0.10467 ms.
+
+### UART frame và quá trình truyền nhận
+
+<p align="center">
+    <img src="image/com-6.png" alt="alt text" width="400">
+</p>
+
+Một frame UART thông thường bao gồm các thành phần sau:
+
+Start: 1 bit mức 0.
+
+Data bits: 5->9 bits, phổ biến nhất là 8, gửi LSB trước.
+
+Parity bit: 1 bit, kiểm tra lỗi, có thể có hoặc không.
+
+Stop: 1 hoặc 2 bit mức cao.
+
+### Kiểm tra chẵn lẻ
+
+**Kiểm tra chẵn (Even Parity)**:
+
+ - Tổng số bit 1 trong dãy phải là một số chẵn.
+
+ - Nếu số bit 1 là chẵn, thì parity bit sẽ là 0.
+
+ - Nếu số bit 1 là lẻ, thì parity bit sẽ là 1 (để tổng số bit 1 trở thành chẵn).
+
+**Kiểm tra lẻ (Odd Parity)**:
+
+ - Tổng số bit 1 trong dãy phải là một số lẻ.
+
+ - Nếu số bit 1 là lẻ, thì parity bit sẽ là 0.
+
+ - Nếu số bit 1 là chẵn, thì parity bit sẽ là 1 (để tổng số bit 1 trở thành lẻ).
+
+Ví dụ:
+
+<p align="center">
+    <img src="image/com-7.png" alt="alt text" width="400">
+</p>
 
 </p>
 </details>
