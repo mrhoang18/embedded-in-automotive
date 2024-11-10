@@ -2621,21 +2621,26 @@ Có hai phiên bản Data Frame: Khung tiêu chuẩn (CAN 2.0A), khung mở rộ
 
 ### Remote Frame
 
+Cấu trúc 1 Remote Frame tương tự Data frame, tuy nhiên Remote Frame có Bit RTR = 1 và không có trường data (Bit DLC =0).
 
 ### Error Frame
 
-Được một node bất kì gửi đi khi phát hiện thông điệp mình vừa nhận không hợp lệ và phải gửi lại.
+Được một node bất kì gửi đi khi phát hiện thông điệp mình vừa nhận không hợp lệ.
 
-Error Frame gồm hai phần: 
- - Error Flag là chuỗi từ 6 đến 12 bit dominant, báo hiệu lỗi. 
- - Error Delimiter là chuỗi 8 bit recessive, kết thúc Error Frame.
+Error Frame gồm hai phần chính:
+
+ - Error Flag là chuỗi gồm 6 bit. Giá trị của 6 bit flag sẽ tùy vào trường hợp lỗi:
+
+    + Active Error Flag: 6 bit 0. Khi node đầu tiên phát hiện lỗi và chủ động gửi đi.
+
+    + Passive Error Flag: 6 bit 1. Khi số lượng lỗi tích lũy của nó vượt qua một ngưỡng xác định tức 
+
+ - Error Delimiter là chuỗi 8 bit recessive ngăn cách.
 
 
 ### Overload Frame
 
 Được một node gửi đi khi nó đang bận xử lý thông điệp hiện tại và yêu cầu các node khác tạm thời dừng truyền cho nó.
-
-
 
 </p>
 </details>
@@ -2644,7 +2649,69 @@ Error Frame gồm hai phần:
 <details><summary>Details</summary>
 <p>
 
-### Mask và Filter
+
+## 1. Cấu hình GPIO và tham số cho CAN
+
+<p align="center">
+    <img src="image/canth-1.png" alt="alt text" width="450">
+</p>
+
+<p align="center">
+    <img src="image/canth-2.png" alt="alt text" width="300">
+</p>
+
+<p align="center">
+    <img src="image/canth-3.png" alt="alt text" width="300">
+</p>
+
+CAN được cấp xung từ APB1.
+
+Cấu hình cho 2 chân TX và RX của bộ CAN.
+ - RX: Mode In_Floating.
+ - TX: Mode AF_PP.
+
+Các tham số cho CAN được cấu hình trong struct `CAN_InitTypeDef`. Gồm:
+
+ - `CAN_TTCM`: **Chế độ giao tiếp được kích hoạt theo thời gian**. Ấn đinh khoảng thời gian khi truyền message.
+ - `CAN_ABOM`: **Quản lý ngắt bus tự động**. Nếu trong quá trình truyền xảy ra lỗi, bus sẽ được ngắt. Bit này quy định việc CAN có quay về trạng thái bình thường hay không.
+ - `CAN_AWUM`: **Chế độ đánh thức tự động**. Nếu CAN hoạt động ở SleepMode, Bit này quy định việc đánh thức CAN theo cách thủ công hay tự động.
+ - `CAN_NART`: **Không  tự động truyền lại**. CAN sẽ thử lại để truyền tin nhắn nếu các lần thử trước đó không thành công. Nếu set bit này thì sẽ không truyền lại. Nên set bit khi sử dụng chung với CAN_TTCM, nếu không thì nên để = 0;
+ - `CAN_RFLM`: **Chế độ khóa nhận FIFO**. Chế độ khóa bộ đệm khi đầy.
+ - `CAN_TXFP`: **Ưu tiên truyền FIFO**. = 1 thì ưu tiên truyền các gói có ID thấp hơn. = 0 thì CAN sẽ ưu tiên các gói theo thứ tự trong bộ đệm.
+ - `CAN_Mode`: Chế độ của node CAN  .
+    + `CAN_Mode_Normal`: Gửi message thông thường.
+    + `CAN_Mode_LoopBack`: Các message gửi đi sẽ được lưu vào bộ nhớ đệm.
+    + `CAN_Mode_Silent`: Chế độ chỉ nhận.
+    + `CAN_Mode_Silent_LoopBack`: Kết hợp giữa 2 mode trên.
+
+ - `CAN_Prescaler`: Cài đặt giá trị chia để tạo time quatum (fCan = system clock / CAN_Prescaler và 1 time quatum = 1/fCan).
+
+    + `CAN_SJW`: Thời gian trễ phần cứng, tính theo tq.
+    + `CAN_BS1`: Thời gian đồng bộ đầu frame truyền, tính theo tq.
+    + `CAN_BS2`: Thời gian đồng bộ cuối frame truyền, tính theo tq.
+
+Tốc độ truyền CAN = 1 / (SJW+BS1+BS2) bit/s.
+
+## 2. Cấu hình Mask và Filter
+
+CAN hỗ trợ bộ lọc ID, giúp các Node có thể lọc ra ID từ các message trên Bus để quyết định sẽ nhận massge nào. Các tham số cho bộ lọc được cấu hình trong `CAN_FilterInitTypeDef`:
+ - `CAN_FilterNumber`: Chọn bộ lọc để dùng, từ 0-13.
+ _ `CAN_FilterMode`: Chế độ bộ lọc: 
+    + IdMask: Sử dụng mặt nạ bit để lọc ID.
+    + IdList: Không sử dụng mặt nạ bit.
+ - `CAN_FilterScale`: Kích thước của bộ lọc, 32 hoặc 16 bit.
+ - `CAN_FilterMaskIdHigh & CAN_FilterMaskIdLow`: Giá trị cài đặt cho Mask, 32 bits.
+ - `CAN_FilterIdHigh & CAN_FilterIdLow`:  Giá trị cài đặt cho bộ lọc, 32bits.
+ - `CAN_FilterFIFOAssignment`: Chọn bộ đệm cần áp dụng bộ lọc.
+ - `CAN_FilterActivation`: Kích hoạt bộ lọc ID.
+
+<p align="center">
+    <img src="image/canth-4.png" alt="alt text" width="400">
+</p>
+
+<p align="center">
+    <img src="image/canth-5.png" alt="alt text" width="400">
+</p>
 
 Mask và Filter hoạt động dựa trên các cổng logic OR và XOR để so sánh từng bit ID với từng bit trên thanh ghi Mark và Filter.
 
@@ -2655,6 +2722,38 @@ Filer dùng để lọc lại chính xác ID nhờ cổng XOR.
 Nếu Mask bằng 0, thì nó cho mọi ID đi qua mặc kệ thanh ghi Filter và ID. (Vì Mark đảo bằng 1 thì cổng OR không quan tâm input còn lại).
 
 Nếu Mask bằng 1, thì bắt buộc bit của Filter giống với bit ID mới cho qua (Vì cổng XOR output bằng 0 chỉ khi bit ID và bit Filter giống nhau).
+
+Ví dụ: 
+Mask: 0xFFF0
+Filter: 0x005A
+=>> ID được chấp nhận từ 0x0050-0x005F.
+
+### Giá trị bộ lọc & giá trị ID trong massage
+
+Thanh ghi chứa giá trị ID của gói tin
+
+<p align="center">
+    <img src="image/canth-6.png" alt="alt text" width="600">
+</p>
+
+Để áp dụng được Mask và ID cho gói tin với ID là stdID, cần setup 11 bit cao của Mask cùng như của Filter.
+
+## 3. Truyền nhận CAN
+
+Để xác định được 1 gói tin, cần có ID, các bit RTR, IDE, DLC và tối đa 8 byte data như bài trước đã đề cập.
+
+Các thành phần này được tổ chức trong `CanTx/RxMsg`.
+
+Hàm truyền `uint8_t CAN_Transmit(CAN_TypeDef* CANx, CanTxMsg* TxMessage)`:
+
+ - `CANx`: Bộ CAN cần dùng.
+ - `TxMessage`: Struct CanRxMsg cần truyền.
+
+Gói tin nhận được sẽ được lưu dưới dạng CanRxMsg struct. Gồm các thành phần tương tự CanTxMsg của gói tin nhận được.
+
+Hàm `CAN_MessagePending(CAN_TypeDef* CANx, uint8_t FIFONumber)`: Trả về số lượng gói tin đang đợi trong FIFO của bộ CAN. Dùng hàm này để kiểm tra xem bộ CAN có đang truyền nhận hay không, nếu FIFO trống thì có thể nhận.
+
+Hàm `CAN_Receive(CAN_TypeDef* CANx, uint8_t FIFONumber, CanRxMsg* RxMessage)`: Nhận về 1 gói tin từ bộ CANx, lưu vào RxMessage.
 
 </p>
 </details>
