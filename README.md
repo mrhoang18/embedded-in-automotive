@@ -2150,7 +2150,7 @@ float updateEstimate(float mea)
     <img src="image/dma-1.png" alt="alt text" width="300">
 </p>
 
-CPU sẽ điều khiển việc trao đổi data giữa Peripheral (UART, I2C, SPI, ...) và bộ nhớ (RAM) qua các đường bus. 
+CPU sẽ điều khiển việc trao đổi data giữa ngoại vi (UART, I2C, SPI, ...) và bộ nhớ (RAM) qua các đường bus. 
 
 CPU phải lấy lệnh từ bộ nhớ (FLASH) để thực thi các lệnh của chương trình. 
 
@@ -2164,19 +2164,33 @@ Vì vậy, khi cần truyền dữ liệu liên tục giữa Peripheral và RAM,
 
 DMA có thể truyền data trực tiếp với tốc độ cao từ :
 
- - Bộ nhớ đến ngoại vi và ngược lại
+ - Bộ nhớ đến ngoại vi và ngược lại.
 
  - Giữa 2 vùng nhớ.
 
 -> Giúp CPU không phải xử lý data, tiết kiệm tài nguyên CPU cho thao tác khác. Đồng thời giảm thiểu việc data nhận về từ ngoại vi bị mất mát.
 
 <p align="center">
-    <img src="image/dma-3.png" alt="alt text" width="600">
+    <img src="image/dma-3.png" alt="alt text" width="500">
 </p>
 
-DMA có thể điều khiển data truyền từ SRAM đến Peripheral - UART và ngược lại, mà không thông qua data bus  của CPU. 
+## 2. DMA trên STM32F103c8t6
 
-Các Channel đều có thể được cấu hình riêng biệt.
+STM32F1 có 2 bộ DMA với nhiều kênh, mỗi kênh có nhiều ngoại vi có thể dùng DMA:
+
+DMA có 2 chế độ hoạt động là normal và circular:
+
+ - Normal mode: Với chế độ này, DMA truyền dữ liệu cho tới khi truyền đủ 1 lượng dữ liệu giới hạn đã khai báo DMA sẽ dừng hoạt động. Muốn nó tiếp tục hoạt động thì phải khởi động lại.
+
+ - Circular mode: Với chế độ này, Khi DMA truyền đủ 1 lượng dữ liệu giới hạn đã khai báo thì nó sẽ truyền tiếp về vị trí ban đầu (Cơ chế như Ring buffer).
+ 
+<p align="center">
+    <img src="image/dma-4.png" alt="alt text" width="500">
+</p>
+
+### Đặc điểm của bộ DMA
+
+Các Channel trong bộ DMA đều có thể được cấu hình riêng biệt.
 
 Mỗi Channel được kết nối để dành riêng cho tín hiệu DMA từ các thiết bị ngoại vi hoặc tín hiệu từ bên trong MCU.
 
@@ -2188,29 +2202,11 @@ Hỗ trợ việc lặp lại liên tục Data.
 
 5 cờ báo ngắt (DMA Half Transfer, DMA Transfer complete, DMA Transfer Error, DMA FIFO Error, Direct Mode Error).
 
-Quyền truy cập tới Flash, SRAM, APB1, APB2, AHB.
+Có quyền truy cập tới Flash, SRAM, APB1, APB2, AHB.
 
 Số lượng data có thể lập trình được lên tới 65535.
 
 Đối với DMA2, mỗi luồng đều hỗ trợ để chuyển dữ liệu từ bộ nhớ đến bộ nhớ.
-
-STM32F1 có 2 bộ DMA với nhiều kênh, mỗi kênh có nhiều ngoại vi có thể dùng DMA:
-
-DMA có 2 chế độ hoạt động là normal và circular:
-
- - Normal mode: Với chế độ này, DMA truyền dữ liệu cho tới khi truyền đủ 1 lượng dữ liệu giới hạn đã khai báo DMA sẽ dừng hoạt động. Muốn nó tiếp tục hoạt động thì phải khởi động lại.
-
-
- - Circular mode: Với chế độ này, Khi DMA truyền đủ 1 lượng dữ liệu giới hạn đã khai báo thì nó sẽ truyền tiếp về vị trí ban đầu (Cơ chế như Ring buffer).
- 
-
-
-
-<p align="center">
-    <img src="image/dma-4.png" alt="alt text" width="300">
-</p>
-
-
 
 </p>
 </details>
