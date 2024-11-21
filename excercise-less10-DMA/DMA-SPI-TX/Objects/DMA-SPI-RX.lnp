@@ -1,0 +1,14 @@
+--cpu Cortex-M3
+".\objects\main.o"
+".\objects\misc.o"
+".\objects\stm32f10x_dma.o"
+".\objects\stm32f10x_gpio.o"
+".\objects\stm32f10x_rcc.o"
+".\objects\stm32f10x_spi.o"
+".\objects\stm32f10x_tim.o"
+".\objects\startup_stm32f10x_md.o"
+".\objects\system_stm32f10x.o"
+--strict --scatter ".\Objects\DMA-SPI-RX.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\DMA-SPI-RX.map" -o .\Objects\DMA-SPI-RX.axf

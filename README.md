@@ -2211,6 +2211,52 @@ DMA có 2 chế độ hoạt động là **Normal** và **Circular**:
     <img src="image/dma-6.png" alt="alt text" width="700">
 </p>
 
+## 3. Lập trình với DMA
+
+### Cấu hình RCC
+Không như các ngoại vi khác, DMA cần được cấp xung từ AHB, cả 2 bộ DMA đều có xung cấp từ AHB. Ngoài ra cần cấp xung cho AFIO.
+
+<p align="center">
+    <img src="image/dma-7.png" alt="alt text" width="500">
+</p>
+
+### Cấu hình kênh
+
+DMA có nhiều kênh, mỗi kênh phục vụ truyền DMA cho các ngoại vi riêng biệt.
+Cần cấu hình cho ngoại vi cần dùng DMA.
+
+<p align="center">
+    <img src="image/dma-4.png" alt="alt text" width="700">
+</p>
+
+Các tham số cho bộ DMA được cấu hình trong `struct DMA_InitTypeDef`. Gồm:
+
+ - `DMA_PeripheralBaseAddr`: Cấu hình địa chỉ của ngoại vi cho DMA. Đây là địa chỉ mà DMA sẽ lấy data hoặc truyền data tới cho ngoại vi.
+ - `DMA MemoryBaseAddr`: Cấu hình địa chỉ vùng nhớ cần ghi/ đọc data .
+ - `DMA_DIR`: Cấu hình hướng truyền DMA, từ ngoại vi tới vùng nhớ hay từ vùng nhớ tới ngoại vi.
+ - `DMA_BufferSize`: Cấu hình kích cỡ buffer. Số lượng dữ liệu muốn gửi/nhận qua DMA.
+ - `DMA_PeripheralInc`: Cấu hình địa chỉ ngoại vi có tăng sau khi truyền DMA hay không.
+ - `DMA Memory Inc`: Cấu hình địa chỉ bộ nhớ có tăng lên sau khi truyền DMA hay không.
+ - `DMA_PeripheralDataSize`: Cấu hình độ lớn data của ngoại vi.
+ - `DMA_MemoryDataSize`: Cấu hình độ lớn data của bộ nhớ.
+ - `DMA_Mode`: Cấu hình mode hoạt động.
+ - `DMA_Priority`: Cấu hình độ ưu tiên cho kênh DMA.
+ - `DMA_M2M`: Cấu hình sử dụng truyền từ bộ nhớ đếm bộ nhớ cho kênh DMA.
+
+Sau khi cấu hình cho DMA xong, chỉ cần gọi hàm DMACmd cho ngoại vi tương ứng. Bộ DMA sẽ tự động truyền nhận data cũng như ghi dữ liệu vào vùng nhớ cụ thể. 
+
+```c
+DMA_Init(DMA1_Channel2, &DMA_InitStruct);
+DMA_Cmd(DMA1_Channel2, ENABLE);
+SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Rx, ENABLE);
+```
+
+Channel2: Ứng với ngoại vi SPI1, RX nhận.
+EX: Hàm SPI_I2S_DMACmd(); cho phép truyền nhận DMA của bộ SPI.
+
+### Code cấu hình mẫu
+
+
 </p>
 </details>
 

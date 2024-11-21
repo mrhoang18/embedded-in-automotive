@@ -1,13 +1,18 @@
 #include "stm32f10x.h"
 
-// Initialize SPI for Slave mode
-void SPI1_Slave_Init(void)
+#define BUFFER_SIZE 10
+uint8_t rx_buffer[BUFFER_SIZE]; // Buffer to store received data rx_buffer
+
+// Initialize SPI1 in Slave mode with DMA
+void SPI1_Slave_DMA_Init(void)
 {
     SPI_InitTypeDef SPI_InitStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
+    DMA_InitTypeDef DMA_InitStructure;
 
-    // Enable Clock for SPI1 and GPIOA
+    // Enable Clock for SPI1, GPIOA, and DMA1
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
     // Configure GPIO pins for SPI1: SCK, MISO, MOSI
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
@@ -33,42 +38,54 @@ void SPI1_Slave_Init(void)
 
     // Enable SPI1
     SPI_Cmd(SPI1, ENABLE);
+
+    // Configure DMA1 Channel2 for SPI1_RX
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR; // SPI1 data register
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)rx_buffer;     // Buffer to store received data
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;             // Data from peripheral to memory
+    DMA_InitStructure.DMA_BufferSize = BUFFER_SIZE;                // Size of the buffer
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                  // Normal mode (not circular)
+    DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                   // Memory-to-memory disabled
+    DMA_Init(DMA1_Channel2, &DMA_InitStructure);
+
+    // Enable DMA1 Channel2
+    DMA_Cmd(DMA1_Channel2, ENABLE);
+
+    // Enable SPI1 RX DMA request
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Rx, ENABLE);
 }
 
-// Function to receive data via SPI1 in Slave mode
-uint8_t SPI1_Slave_Receive(void)
+// Function to check if DMA transfer is complete
+uint8_t Is_DMA_Transfer_Complete(void)
 {
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
-        ;                             // Wait until data is received
-    return SPI_I2S_ReceiveData(SPI1); // Read received data
+    return DMA_GetFlagStatus(DMA1_FLAG_TC2); // Check transfer complete flag for DMA1 Channel2
 }
-
-// Alternative function to receive a single byte via SPI
-uint8_t SPI_Receive1Byte(void)
-{
-    uint8_t temp;
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == 1);		// Wait until SPI is not busy
-    temp = (uint8_t)SPI_I2S_ReceiveData(SPI1);
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == 0);	// Wait until data is received
-    return temp;
-}
-
-uint8_t received_data = 0; // Variable to store received data
 
 int main(void)
 {
-    SPI1_Slave_Init(); // Initialize SPI1 in Slave mode
+    SPI1_Slave_DMA_Init(); // Initialize SPI1 in Slave mode with DMA
 
     while (1)
     {
         // Check if CS (PA4) is low, indicating data transfer
         if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0)
         {
-            // Loop to receive data 10 times
-            for (int i = 0; i < 10; i++)
-            {
-                received_data = SPI1_Slave_Receive(); // Receive data and store in received_data
-            }
+            // Start the DMA transfer
+            DMA_Cmd(DMA1_Channel2, ENABLE);
+
+            // Wait for the transfer to complete
+            while (!Is_DMA_Transfer_Complete());
+
+            // Clear DMA transfer complete flag
+            DMA_ClearFlag(DMA1_FLAG_TC2);
+
+            // Process received data in rx_buffer
+            // Add your processing code here
         }
     }
 }

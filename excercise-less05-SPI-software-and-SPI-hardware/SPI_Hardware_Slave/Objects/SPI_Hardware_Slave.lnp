@@ -7,6 +7,7 @@
 ".\objects\stm32f10x_tim.o"
 ".\objects\startup_stm32f10x_md.o"
 ".\objects\system_stm32f10x.o"
+".\objects\stm32f10x_dma.o"
 --strict --scatter ".\Objects\SPI_Hardware_Slave.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
