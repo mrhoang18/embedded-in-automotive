@@ -1601,7 +1601,7 @@ uint8_t At24c32_Random_Read(uint8_t at24c32Addr, uint16_t memAddr)
 </p>
 </details>
 
-# LESSON 07: UART
+# LESSON 07: UART SOFTWARE & UART HARDWARE
 <details><summary>Details</summary>
 <p>
 ## 1. UART software
@@ -1971,7 +1971,7 @@ void USART1_IRQHandler()
 </p>
 </details>
 
-# LESSON 09: ADC
+# LESSON 09: ADC - ANALOG TO DIGITAL CONVERTER
 <details><summary>Details</summary>
 <p>
 
@@ -1981,12 +1981,7 @@ void USART1_IRQHandler()
     <img src="image/adc-1.png" alt="alt text" width="300">
 </p>
 
-Vi điều khiển cũng như hầu hết các thiết bị điện tử ngày nay đều sử dụng tín hiệu kĩ thuật số, dựa trên các bit nhị phân để hoạt động.
-
-Ngoài tín hiệu số, trong thực tế còn có tín hiệu tương tự và liên tục, vì thế để các thiết bị hiểu được cần phải chuyển đổi nó về dạng số.
-
-ADC (Analog-to-Digital Converter) là 1 mạch điện tử lấy điện áp tương tự làm đầu vào và chuyển đổi nó thành dữ liệu số (1 giá trị đại diện cho mức điện áp trong mã nhị phân).
-
+ADC là mạch điện tử lấy điện áp tương tự làm đầu vào và chuyển đổi nó thành dữ liệu số (1 giá trị đại diện cho mức điện áp trong mã nhị phân).
 
 Khả năng chuyển đổi của ADC được quyết định bởi 2 yếu tố chính:
 
