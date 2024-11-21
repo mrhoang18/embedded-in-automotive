@@ -5,14 +5,13 @@
 </p>
 </details>
 
-# LESSON 02: GPIO
+# LESSON 02: GPIO - GENARAL PURPOSE INPUT OUTPUT
 <details><summary>Details</summary>
 <p>
 
-## 1. Thư viện STM32F10x SPL (Standard Peripherals Library)
-## 2. Lý thuyết về GPIO
+## 1. Lý thuyết về GPIO
 
-GPIO-General Purpose Input/Output là các chân trên vi điều khiển có thể lập trình để truyền nhận tín 
+GPIO là các chân trên vi điều khiển có thể lập trình để truyền nhận tín 
 hiệu với các thiết bị bên ngoài hoặc thực hiện các chức năng giao tiếp 
 khác.
  
@@ -123,7 +122,7 @@ Ví dụ các chức năng thay thế: chân Rx/Tx cho giao tiếp UART, chân S
 
 Để cấu hình cho chức năng thay thế, ta phải tác động lên các thanh ghi cụ thể, sẽ học kĩ hơn ở các bài sau.
 
-## 3. Lập trình với GPIO
+## 2. Lập trình với GPIO
 
 Để sử dụng một ngoại vi bất kì phải trải qua các bước sau:
 
@@ -227,11 +226,10 @@ Một số hàm thao tác với GPIO:
     ```C
     void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal);
     ```
-## 4. Bài tập (Xem trong folder: lesson-2-GPIO)
+## 3. Bài tập (Xem trong folder: lesson-2-GPIO)
 
 </p>
 </details>
-
 
 # LESSON 3: INTERRUPTS AND TIMER
 <details><summary>Details</summary>
