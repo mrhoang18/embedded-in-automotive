@@ -2185,7 +2185,7 @@ DMA có 2 chế độ hoạt động là normal và circular:
  - Circular mode: Với chế độ này, Khi DMA truyền đủ 1 lượng dữ liệu giới hạn đã khai báo thì nó sẽ truyền tiếp về vị trí ban đầu (Cơ chế như Ring buffer).
  
 <p align="center">
-    <img src="image/dma-4.png" alt="alt text" width="500">
+    <img src="image/dma-4.png" alt="alt text" width="700">
 </p>
 
 ### Đặc điểm của bộ DMA
