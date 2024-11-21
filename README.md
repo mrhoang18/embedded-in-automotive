@@ -2142,7 +2142,7 @@ float updateEstimate(float mea)
 </p>
 </details>
 
-# LESSON 10: DMA
+# LESSON 10: DMA - DIRECT MEMORY ACCESS
 <details><summary>Details</summary>
 <p>
 
@@ -2162,21 +2162,16 @@ Vì vậy, khi cần truyền dữ liệu liên tục giữa Peripheral và RAM,
     <img src="image/dma-2.png" alt="alt text" width="300">
 </p>
 
-DMA – Direct memory access được sử dụng với mục đích truyền data với tốc độ cao từ thiết bị ngoại vi đến bộ nhớ cũng như từ bộ nhớ đến bộ nhớ.
+DMA có thể truyền data trực tiếp với tốc độ cao từ :
 
-DMA có thể điều khiển data truyền từ :
- - Bộ nhớ đến Peripheral 
-
- - Ngược lại, Periph đến Bộ nhớ.
+ - Bộ nhớ đến ngoại vi và ngược lại
 
  - Giữa 2 vùng nhớ.
 
- - Không thông qua data bus  của CPU. 
-
--> Tiết kiệm tài nguyên của CPU cho các thao tác khác. Đồng thời tránh việc data nhận về từ ngoại vi bị mất mát.
+-> Giúp CPU không phải xử lý data, tiết kiệm tài nguyên CPU cho thao tác khác. Đồng thời giảm thiểu việc data nhận về từ ngoại vi bị mất mát.
 
 <p align="center">
-    <img src="image/dma-3.png" alt="alt text" width="300">
+    <img src="image/dma-3.png" alt="alt text" width="600">
 </p>
 
 DMA có thể điều khiển data truyền từ SRAM đến Peripheral - UART và ngược lại, mà không thông qua data bus  của CPU. 
