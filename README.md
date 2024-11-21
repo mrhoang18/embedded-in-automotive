@@ -2182,7 +2182,7 @@ STM32F1 có 2 bộ DMA với nhiều kênh, mỗi kênh có nhiều ngoại vi c
     <img src="image/dma-4.png" alt="alt text" width="700">
 </p>
 
-### Đặc điểm của bộ DMA trên STM32F103C8T6
+### Đặc điểm hoạt động của bộ DMA trên STM32F103C8T6
 
 Các Channel đều có thể được cấu hình riêng biệt.
 
@@ -2204,15 +2204,15 @@ Số lượng data có thể lập trình được lên tới 65535.
 
 ### Chế độ truyền nhận
 
-DMA có 2 chế độ hoạt động là normal và circular:
+DMA có 2 chế độ hoạt động là **Normal** và **Circular**:
 
- - Normal mode: Với chế độ này, DMA truyền dữ liệu cho tới khi truyền đủ 1 lượng dữ liệu giới hạn đã khai báo DMA sẽ dừng hoạt động. Muốn nó tiếp tục hoạt động thì phải khởi động lại.
+ - **Normal mode**: Với chế độ này, DMA truyền dữ liệu cho tới khi truyền đủ 1 lượng dữ liệu giới hạn đã khai báo DMA sẽ dừng hoạt động. Muốn nó tiếp tục hoạt động thì phải khởi động lại.
 
 <p align="center">
     <img src="image/dma-5.png" alt="alt text" width="700">
 </p>
 
- - Circular mode: Với chế độ này, Khi DMA truyền đủ 1 lượng dữ liệu giới hạn đã khai báo thì nó sẽ truyền tiếp về vị trí ban đầu (Cơ chế như Ring buffer).
+ - **Circular mode**: Với chế độ này, Khi DMA truyền đủ 1 lượng dữ liệu giới hạn đã khai báo thì nó sẽ truyền tiếp về vị trí ban đầu (Cơ chế như Ring buffer).
 
 <p align="center">
     <img src="image/dma-6.png" alt="alt text" width="700">
