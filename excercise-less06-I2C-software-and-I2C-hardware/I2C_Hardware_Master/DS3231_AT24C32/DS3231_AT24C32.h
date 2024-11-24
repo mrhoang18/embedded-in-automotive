@@ -238,7 +238,14 @@ void DS3231_SetDate(uint8_t day, uint8_t date, uint8_t month, uint8_t year);
  * @param year: Pointer to store the year (0-99, representing 2000-2099).
  */
 void DS3231_GetDate(uint8_t *day, uint8_t *date, uint8_t *month, uint8_t *year);
-	
+
+/**
+ * @brief Converts a day number (1-7) to the corresponding day name.
+ * @param day: Day number (1 = Sunday, 7 = Saturday).
+ * @retval Pointer to a string containing the day name.
+ */
+const char*  DS3231_GetDayName(uint8_t day);
+
 #ifdef __cplusplus
 }
 #endif

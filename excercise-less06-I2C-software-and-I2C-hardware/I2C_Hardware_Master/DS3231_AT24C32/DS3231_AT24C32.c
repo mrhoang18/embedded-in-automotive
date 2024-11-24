@@ -409,3 +409,32 @@ void DS3231_GetDate(uint8_t *day, uint8_t *date, uint8_t *month, uint8_t *year)
     // Re-enable ACK for future communications
     I2C_AcknowledgeConfig(I2C1, ENABLE);
 }
+
+/**
+ * @brief Converts a day number (1-7) to the corresponding day name.
+ * @param day: Day number (1 = Sunday, 7 = Saturday).
+ * @retval Pointer to a string containing the day name.
+ */
+const char* DS3231_GetDayName(uint8_t day) 
+	{
+    // Static array of day names using pre-defined macros
+    static const char* dayNames[] = 
+	{
+        "Invalid",	// Placeholder for index 0
+        "Sun",     	// DAY_SUNDAY
+        "Mon",     	// DAY_MONDAY
+        "Tues",    	// DAY_TUESDAY
+        "Wed",   	// DAY_WEDNESDAY
+        "Thu",    	// DAY_THURSDAY
+        "Fri",      // DAY_FRIDAY
+        "Sat"     	// DAY_SATURDAY
+    };
+
+    // Validate the input range
+    if (day < DAY_SUNDAY || day > DAY_SATURDAY) 
+	{
+        return dayNames[0]; // Return "Invalid" for out-of-range values
+    }
+
+    return dayNames[day]; // Return the corresponding day name
+}
