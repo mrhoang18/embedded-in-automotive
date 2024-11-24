@@ -1,5 +1,5 @@
 Dependencies for Project 'I2C_Hardware_Master', Target 'Target 1': (DO NOT MODIFY !)
-F (.\main.c)(0x6727964E)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I.\DS3231_AT24C32 -I.\Delay-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\main.c)(0x6743021C)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I.\DS3231_AT24C32 -I.\Delay-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h)(0x61AD876E)
 I (C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\RTE_Components.h)(0x671F5466)
 I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cm3.h)(0x5625C51C)
@@ -16,8 +16,8 @@ I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc\stm3
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc\misc.h)(0x61AD876E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x55DB3988)
 I (.\Delay\Delay.h)(0x6727497B)
-I (.\DS3231_AT24C32\DS3231_AT24C32.h)(0x6720CCF6)
-F (.\DS3231_AT24C32\DS3231_AT24C32.c)(0x67273813)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I.\DS3231_AT24C32 -I.\Delay-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\ds3231_at24c32.o --omf_browse .\objects\ds3231_at24c32.crf --depend .\objects\ds3231_at24c32.d)
+I (.\DS3231_AT24C32\DS3231_AT24C32.h)(0x6743048B)
+F (.\DS3231_AT24C32\DS3231_AT24C32.c)(0x6743048B)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I.\DS3231_AT24C32 -I.\Delay-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\ds3231_at24c32.o --omf_browse .\objects\ds3231_at24c32.crf --depend .\objects\ds3231_at24c32.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h)(0x61AD876E)
 I (C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\RTE_Components.h)(0x671F5466)
 I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include\core_cm3.h)(0x5625C51C)
@@ -32,9 +32,9 @@ I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc\stm3
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc\stm32f10x_rcc.h)(0x61AD876E)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc\stm32f10x_tim.h)(0x61AD876E)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc\misc.h)(0x61AD876E)
-I (DS3231_AT24C32\DS3231_AT24C32.h)(0x6720CCF6)
+I (DS3231_AT24C32\DS3231_AT24C32.h)(0x6743048B)
 I (.\Delay\Delay.h)(0x6727497B)
-F (.\DS3231_AT24C32\DS3231_AT24C32.h)(0x6720CCF6)()
+F (.\DS3231_AT24C32\DS3231_AT24C32.h)(0x6743048B)()
 F (.\Delay\Delay.c)(0x672749D4)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I.\DS3231_AT24C32 -I.\Delay-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE-I C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\Device\STM32F103C8-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F10X_MD-o .\objects\delay.o --omf_browse .\objects\delay.crf --depend .\objects\delay.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h)(0x61AD876E)
 I (C:\Users\yamch\Desktop\embedded-in-automotive\embedded-in-automotive\excercise-less06-I2C-software-and-I2C-hardware\I2C_Hardware_Master\RTE\RTE_Components.h)(0x671F5466)

@@ -48,7 +48,10 @@ void I2C_Config()
 	
     I2C_InitTypeDef I2C_InitStructure;
 
-    I2C_InitStructure.I2C_ClockSpeed = 400000; // Fast mode
+	I2C_DeInit(I2C1);
+	I2C_Cmd(I2C1, DISABLE);
+	
+    I2C_InitStructure.I2C_ClockSpeed = 100000; // Fast mode
     I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
     I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
     I2C_InitStructure.I2C_OwnAddress1 = 0x00; // Address Master
@@ -70,39 +73,37 @@ int main()
     GPIO_Config();
 	I2C_Config();
 	
+	// Set up time if needed ( hours, minutes, seconds, 0-24h mode)/1-12h mode)
+	// DS3231_SetTime(17, 23, 00, 0, 0); //
 	
-	/* // Set up time if needed
-	uint8_t set_hours = 1;
-    uint8_t set_minutes = 51;
-    uint8_t set_seconds = 00;
+	// Set up date if needed (Sunday, November 24, 2024)
+	//  DS3231_SetDate(DAY_SUNDAY, 24, MONTH_NOVEMBER, 24);
 
-    // Set up time for DS3231 if needed
-    DS3231_SetTime(hours, minutes, seconds);
-	*/
 	
-	// uint8_t get_hours = 0, get_minutes = 0, get_seconds = 0;
-
-	uint8_t Array_DataToWrite[3] = {0x01, 0x02, 0x03};
-	uint8_t Array_DataToRead[3] = {0x00, 0x00, 0x00};
+	uint8_t get_hours = 0, get_minutes = 0, get_seconds = 0;
+	uint8_t get_day = 0, get_date = 0, get_month = 0, get_year = 0;
+	//	uint8_t Array_DataToWrite[3] = {0x01, 0x02, 0x03};
+	//	uint8_t Array_DataToRead[3] = {0x00, 0x00, 0x00};
 	
     while (1)
     {
-		// DS3231_GetTime(&get_hours, &get_minutes, &get_seconds);
+		DS3231_GetTime(&get_hours, &get_minutes, &get_seconds);
+		DS3231_GetDate(&get_day, &get_date, &get_month, &get_year);
 		
         // Write data to At24c32 at specified memory address
         // At24c32_Write(At24c32_Address, At24c32_MemoryAddress, At24c32_DataToWrite);
 
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		At24c32_Write(At24c32_Address, At24c32_MemoryAddress + i, Array_DataToWrite[i]); 
-	}
-	
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		Array_DataToRead[i] = At24c32_Random_Read(At24c32_Address, At24c32_MemoryAddress + i); 
-		// Array_DataToRead
-		Delay_Ms(1000);
-	}
+//	for (uint8_t i = 0; i < 3; i++)
+//	{
+//		At24c32_Write(At24c32_Address, At24c32_MemoryAddress + i, Array_DataToWrite[i]); 
+//	}
+//	
+//	for (uint8_t i = 0; i < 3; i++)
+//	{
+//		Array_DataToRead[i] = At24c32_Random_Read(At24c32_Address, At24c32_MemoryAddress + i); 
+//		// Array_DataToRead
+//		Delay_Ms(1000);
+//	}
 	
     }
 }
