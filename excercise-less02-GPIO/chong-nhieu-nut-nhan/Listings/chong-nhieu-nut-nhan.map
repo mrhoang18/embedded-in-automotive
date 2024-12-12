@@ -19,6 +19,8 @@ Section Cross References
     main.o(i.main) refers to main.o(.data) for isPress
     stm32f10x_gpio.o(i.GPIO_AFIODeInit) refers to stm32f10x_rcc.o(i.RCC_APB2PeriphResetCmd) for RCC_APB2PeriphResetCmd
     stm32f10x_gpio.o(i.GPIO_DeInit) refers to stm32f10x_rcc.o(i.RCC_APB2PeriphResetCmd) for RCC_APB2PeriphResetCmd
+    stm32f10x_rcc.o(i.RCC_GetClocksFreq) refers to stm32f10x_rcc.o(.data) for APBAHBPrescTable
+    stm32f10x_rcc.o(i.RCC_WaitForHSEStartUp) refers to stm32f10x_rcc.o(i.RCC_GetFlagStatus) for RCC_GetFlagStatus
     stm32f10x_tim.o(i.TIM_DeInit) refers to stm32f10x_rcc.o(i.RCC_APB2PeriphResetCmd) for RCC_APB2PeriphResetCmd
     stm32f10x_tim.o(i.TIM_DeInit) refers to stm32f10x_rcc.o(i.RCC_APB1PeriphResetCmd) for RCC_APB1PeriphResetCmd
     stm32f10x_tim.o(i.TIM_ETRClockMode1Config) refers to stm32f10x_tim.o(i.TIM_ETRConfig) for TIM_ETRConfig
@@ -52,8 +54,6 @@ Section Cross References
     system_stm32f10x.o(i.SetSysClock) refers to system_stm32f10x.o(i.SetSysClockTo72) for SetSysClockTo72
     system_stm32f10x.o(i.SystemCoreClockUpdate) refers to system_stm32f10x.o(.data) for SystemCoreClock
     system_stm32f10x.o(i.SystemInit) refers to system_stm32f10x.o(i.SetSysClock) for SetSysClock
-    stm32f10x_rcc.o(i.RCC_GetClocksFreq) refers to stm32f10x_rcc.o(.data) for APBAHBPrescTable
-    stm32f10x_rcc.o(i.RCC_WaitForHSEStartUp) refers to stm32f10x_rcc.o(i.RCC_GetFlagStatus) for RCC_GetFlagStatus
     __main.o(!!!main) refers to __rtentry.o(.ARM.Collect$$rtentry$$00000000) for __rt_entry
     __rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to __rtentry2.o(.ARM.Collect$$rtentry$$0000000A) for __rt_entry_li
     __rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to __rtentry2.o(.ARM.Collect$$rtentry$$0000000D) for __rt_entry_main
@@ -161,6 +161,14 @@ Removing Unused input sections from the image.
     Removing main.o(.rev16_text), (4 bytes).
     Removing main.o(.revsh_text), (4 bytes).
     Removing main.o(.rrx_text), (6 bytes).
+    Removing misc.o(.rev16_text), (4 bytes).
+    Removing misc.o(.revsh_text), (4 bytes).
+    Removing misc.o(.rrx_text), (6 bytes).
+    Removing misc.o(i.NVIC_Init), (112 bytes).
+    Removing misc.o(i.NVIC_PriorityGroupConfig), (20 bytes).
+    Removing misc.o(i.NVIC_SetVectorTable), (20 bytes).
+    Removing misc.o(i.NVIC_SystemLPConfig), (32 bytes).
+    Removing misc.o(i.SysTick_CLKSourceConfig), (40 bytes).
     Removing stm32f10x_exti.o(.rev16_text), (4 bytes).
     Removing stm32f10x_exti.o(.revsh_text), (4 bytes).
     Removing stm32f10x_exti.o(.rrx_text), (6 bytes).
@@ -191,6 +199,40 @@ Removing Unused input sections from the image.
     Removing stm32f10x_gpio.o(i.GPIO_StructInit), (16 bytes).
     Removing stm32f10x_gpio.o(i.GPIO_Write), (4 bytes).
     Removing stm32f10x_gpio.o(i.GPIO_WriteBit), (10 bytes).
+    Removing stm32f10x_rcc.o(.rev16_text), (4 bytes).
+    Removing stm32f10x_rcc.o(.revsh_text), (4 bytes).
+    Removing stm32f10x_rcc.o(.rrx_text), (6 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_ADCCLKConfig), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_AHBPeriphClockCmd), (32 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_APB1PeriphResetCmd), (32 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_APB2PeriphResetCmd), (32 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_AdjustHSICalibrationValue), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_BackupResetCmd), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_ClearFlag), (20 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_ClearITPendingBit), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_ClockSecuritySystemCmd), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_DeInit), (76 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_GetClocksFreq), (212 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_GetFlagStatus), (60 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_GetITStatus), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_GetSYSCLKSource), (16 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_HCLKConfig), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_HSEConfig), (76 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_HSICmd), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_ITConfig), (32 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_LSEConfig), (52 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_LSICmd), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_MCOConfig), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_PCLK1Config), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_PCLK2Config), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_PLLCmd), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_PLLConfig), (28 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_RTCCLKCmd), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_RTCCLKConfig), (16 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_SYSCLKConfig), (24 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_USBCLKConfig), (12 bytes).
+    Removing stm32f10x_rcc.o(i.RCC_WaitForHSEStartUp), (56 bytes).
+    Removing stm32f10x_rcc.o(.data), (20 bytes).
     Removing stm32f10x_tim.o(.rev16_text), (4 bytes).
     Removing stm32f10x_tim.o(.revsh_text), (4 bytes).
     Removing stm32f10x_tim.o(.rrx_text), (6 bytes).
@@ -285,48 +327,6 @@ Removing Unused input sections from the image.
     Removing system_stm32f10x.o(.rrx_text), (6 bytes).
     Removing system_stm32f10x.o(i.SystemCoreClockUpdate), (164 bytes).
     Removing system_stm32f10x.o(.data), (20 bytes).
-    Removing misc.o(.rev16_text), (4 bytes).
-    Removing misc.o(.revsh_text), (4 bytes).
-    Removing misc.o(.rrx_text), (6 bytes).
-    Removing misc.o(i.NVIC_Init), (112 bytes).
-    Removing misc.o(i.NVIC_PriorityGroupConfig), (20 bytes).
-    Removing misc.o(i.NVIC_SetVectorTable), (20 bytes).
-    Removing misc.o(i.NVIC_SystemLPConfig), (32 bytes).
-    Removing misc.o(i.SysTick_CLKSourceConfig), (40 bytes).
-    Removing stm32f10x_rcc.o(.rev16_text), (4 bytes).
-    Removing stm32f10x_rcc.o(.revsh_text), (4 bytes).
-    Removing stm32f10x_rcc.o(.rrx_text), (6 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_ADCCLKConfig), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_AHBPeriphClockCmd), (32 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_APB1PeriphResetCmd), (32 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_APB2PeriphResetCmd), (32 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_AdjustHSICalibrationValue), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_BackupResetCmd), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_ClearFlag), (20 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_ClearITPendingBit), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_ClockSecuritySystemCmd), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_DeInit), (76 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_GetClocksFreq), (212 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_GetFlagStatus), (60 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_GetITStatus), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_GetSYSCLKSource), (16 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_HCLKConfig), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_HSEConfig), (76 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_HSICmd), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_ITConfig), (32 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_LSEConfig), (52 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_LSICmd), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_MCOConfig), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_PCLK1Config), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_PCLK2Config), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_PLLCmd), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_PLLConfig), (28 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_RTCCLKCmd), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_RTCCLKConfig), (16 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_SYSCLKConfig), (24 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_USBCLKConfig), (12 bytes).
-    Removing stm32f10x_rcc.o(i.RCC_WaitForHSEStartUp), (56 bytes).
-    Removing stm32f10x_rcc.o(.data), (20 bytes).
 
 169 unused section(s) (total 6000 bytes) removed from the image.
 
@@ -344,11 +344,11 @@ Image Symbol Table
     ../clib/angel/boardlib.s                 0x00000000   Number         0  boardinit3.o ABSOLUTE
     ../clib/angel/handlers.s                 0x00000000   Number         0  __scatter_zi.o ABSOLUTE
     ../clib/angel/handlers.s                 0x00000000   Number         0  __scatter_copy.o ABSOLUTE
-    ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry.o ABSOLUTE
+    ../clib/angel/kernel.s                   0x00000000   Number         0  rtexit.o ABSOLUTE
     ../clib/angel/kernel.s                   0x00000000   Number         0  rtexit2.o ABSOLUTE
     ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry4.o ABSOLUTE
     ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry2.o ABSOLUTE
-    ../clib/angel/kernel.s                   0x00000000   Number         0  rtexit.o ABSOLUTE
+    ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry.o ABSOLUTE
     ../clib/angel/rt.s                       0x00000000   Number         0  rt_raise.o ABSOLUTE
     ../clib/angel/scatter.s                  0x00000000   Number         0  __scatter.o ABSOLUTE
     ../clib/angel/startup.s                  0x00000000   Number         0  __main.o ABSOLUTE
@@ -357,32 +357,32 @@ Image Symbol Table
     ../clib/angel/sys.s                      0x00000000   Number         0  indicate_semi.o ABSOLUTE
     ../clib/angel/sys.s                      0x00000000   Number         0  libspace.o ABSOLUTE
     ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_exit.o ABSOLUTE
-    ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_wrch.o ABSOLUTE
     ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_command.o ABSOLUTE
+    ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_wrch.o ABSOLUTE
+    ../clib/armsys.c                         0x00000000   Number         0  _get_argv_nomalloc.o ABSOLUTE
     ../clib/armsys.c                         0x00000000   Number         0  no_argv.o ABSOLUTE
     ../clib/armsys.c                         0x00000000   Number         0  argv_veneer.o ABSOLUTE
     ../clib/armsys.c                         0x00000000   Number         0  argv_veneer.o ABSOLUTE
-    ../clib/armsys.c                         0x00000000   Number         0  _get_argv_nomalloc.o ABSOLUTE
     ../clib/heapalloc.c                      0x00000000   Number         0  hrguard.o ABSOLUTE
     ../clib/heapaux.c                        0x00000000   Number         0  heapauxi.o ABSOLUTE
     ../clib/libinit.s                        0x00000000   Number         0  libinit2.o ABSOLUTE
     ../clib/libinit.s                        0x00000000   Number         0  libshutdown.o ABSOLUTE
     ../clib/libinit.s                        0x00000000   Number         0  libshutdown2.o ABSOLUTE
     ../clib/libinit.s                        0x00000000   Number         0  libinit.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_fpe_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_abrt_inner.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_general.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_exit.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_formal.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_general.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_outer.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  __raise.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_cppl_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_other.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_segv_inner.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_cppl_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_pvfn_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_stak_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_rtred_inner.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_fpe_inner.o ABSOLUTE
     ../clib/signal.s                         0x00000000   Number         0  defsig.o ABSOLUTE
     ../clib/stdlib.c                         0x00000000   Number         0  exit.o ABSOLUTE
     ../fplib/fpinit.s                        0x00000000   Number         0  fpinit.o ABSOLUTE
@@ -668,7 +668,7 @@ Memory Map of the image
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x08000000   0x000000ec   Data   RO          850    RESET               startup_stm32f10x_md.o
+    0x08000000   0x000000ec   Data   RO         1110    RESET               startup_stm32f10x_md.o
     0x080000ec   0x00000008   Code   RO         1165  * !!!main             c_w.l(__main.o)
     0x080000f4   0x00000034   Code   RO         1322    !!!scatter          c_w.l(__scatter.o)
     0x08000128   0x0000001a   Code   RO         1324    !!handler_copy      c_w.l(__scatter_copy.o)
@@ -716,7 +716,7 @@ Memory Map of the image
     0x0800017c   0x00000004   Code   RO         1245    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
     0x08000180   0x00000006   Code   RO         1246    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
     0x08000186   0x00000002   PAD
-    0x08000188   0x00000040   Code   RO          851    .text               startup_stm32f10x_md.o
+    0x08000188   0x00000040   Code   RO         1111    .text               startup_stm32f10x_md.o
     0x080001c8   0x00000006   Code   RO         1163    .text               c_w.l(heapauxi.o)
     0x080001ce   0x0000004a   Code   RO         1183    .text               c_w.l(sys_stackheap_outer.o)
     0x08000218   0x00000012   Code   RO         1185    .text               c_w.l(exit.o)
@@ -727,18 +727,18 @@ Memory Map of the image
     0x08000242   0x00000000   Code   RO         1267    .text               c_w.l(indicate_semi.o)
     0x08000242   0x0000001e   Code   RO            4    i.Delay_ms          main.o
     0x08000260   0x0000002c   Code   RO            5    i.GPIO_Config       main.o
-    0x0800028c   0x00000116   Code   RO          171    i.GPIO_Init         stm32f10x_gpio.o
-    0x080003a2   0x00000012   Code   RO          175    i.GPIO_ReadInputDataBit  stm32f10x_gpio.o
-    0x080003b4   0x00000020   Code   RO          954    i.RCC_APB1PeriphClockCmd  stm32f10x_rcc.o
-    0x080003d4   0x00000020   Code   RO          956    i.RCC_APB2PeriphClockCmd  stm32f10x_rcc.o
-    0x080003f4   0x00000008   Code   RO          858    i.SetSysClock       system_stm32f10x.o
-    0x080003fc   0x000000e0   Code   RO          859    i.SetSysClockTo72   system_stm32f10x.o
-    0x080004dc   0x00000060   Code   RO          861    i.SystemInit        system_stm32f10x.o
-    0x0800053c   0x00000006   Code   RO          301    i.TIM_ClearFlag     stm32f10x_tim.o
-    0x08000542   0x00000018   Code   RO          307    i.TIM_Cmd           stm32f10x_tim.o
-    0x0800055a   0x00000006   Code   RO          326    i.TIM_GetCounter    stm32f10x_tim.o
-    0x08000560   0x00000004   Code   RO          372    i.TIM_SetCounter    stm32f10x_tim.o
-    0x08000564   0x000000a4   Code   RO          378    i.TIM_TimeBaseInit  stm32f10x_tim.o
+    0x0800028c   0x00000116   Code   RO          219    i.GPIO_Init         stm32f10x_gpio.o
+    0x080003a2   0x00000012   Code   RO          223    i.GPIO_ReadInputDataBit  stm32f10x_gpio.o
+    0x080003b4   0x00000020   Code   RO          341    i.RCC_APB1PeriphClockCmd  stm32f10x_rcc.o
+    0x080003d4   0x00000020   Code   RO          343    i.RCC_APB2PeriphClockCmd  stm32f10x_rcc.o
+    0x080003f4   0x00000008   Code   RO         1118    i.SetSysClock       system_stm32f10x.o
+    0x080003fc   0x000000e0   Code   RO         1119    i.SetSysClockTo72   system_stm32f10x.o
+    0x080004dc   0x00000060   Code   RO         1121    i.SystemInit        system_stm32f10x.o
+    0x0800053c   0x00000006   Code   RO          561    i.TIM_ClearFlag     stm32f10x_tim.o
+    0x08000542   0x00000018   Code   RO          567    i.TIM_Cmd           stm32f10x_tim.o
+    0x0800055a   0x00000006   Code   RO          586    i.TIM_GetCounter    stm32f10x_tim.o
+    0x08000560   0x00000004   Code   RO          632    i.TIM_SetCounter    stm32f10x_tim.o
+    0x08000564   0x000000a4   Code   RO          638    i.TIM_TimeBaseInit  stm32f10x_tim.o
     0x08000608   0x0000003e   Code   RO            6    i.Timer2_Init       main.o
     0x08000646   0x00000002   PAD
     0x08000648   0x00000050   Code   RO            7    i.main              main.o
@@ -752,8 +752,8 @@ Memory Map of the image
     0x20000000   0x00000005   Data   RW            8    .data               main.o
     0x20000005   0x00000003   PAD
     0x20000008   0x00000060   Zero   RW         1194    .bss                c_w.l(libspace.o)
-    0x20000068   0x00000200   Zero   RW          849    HEAP                startup_stm32f10x_md.o
-    0x20000268   0x00000400   Zero   RW          848    STACK               startup_stm32f10x_md.o
+    0x20000068   0x00000200   Zero   RW         1109    HEAP                startup_stm32f10x_md.o
+    0x20000268   0x00000400   Zero   RW         1108    STACK               startup_stm32f10x_md.o
 
 
 ==============================================================================
